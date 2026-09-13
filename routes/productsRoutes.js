@@ -1,0 +1,1 @@
+const authMid = require('../middleware/authMid')

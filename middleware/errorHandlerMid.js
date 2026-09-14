@@ -11,7 +11,7 @@ const errorHandler = (err,req,res,next)=>{
         customErr.statusCode = StatusCodes.BAD_REQUEST
     }
     //console.log(err.statusCode)
-    //res.status(customErr.statusCode).json(err)
-    res.status(customErr.statusCode).json({message:customErr.message})
+    res.status(customErr.statusCode).json(err.message)
+    //res.status(customErr.statusCode).json({message:customErr.message})
 }
 module.exports = errorHandler

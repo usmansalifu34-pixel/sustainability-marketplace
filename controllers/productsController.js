@@ -70,4 +70,49 @@ const deleteProduct = async (req,res)=>{
     const response = await client.send(command)
         res.status(StatusCodes.OK).json({success:true,product,message:`Product deleted successfully`})
 }
-module.exports = {createProduct,getProducts,deleteProduct}
+const getProduct = async(req,res)=>{
+    const {id} = req.params
+    const product = await model.findOne({_id:id})
+    if(!product) throw new notFound("Product doesn't exist")
+    res.status(StatusCodes.OK).json({success:true,product,message:`Product fetched successfully`})
+}
+
+const updateProduct = async (req,res)=>{
+    const {role,UserId} = req.user
+    const {id} = req.params
+    if(role!=='vendor') throw new authError("You are not authorized to access this route")
+        let product
+    if(req.file) {
+        const{buffer} = req.file
+            
+            let prod = await model.findOne({_id:id})
+            if(!prod) throw new notFound("Product doesn't exist in database")
+            let prodImage = prod.image
+            let key = prodImage.slice(prodImage.lastIndexOf('/'))
+            let command = new DeleteObjectCommand({
+                Bucket: "sustainability-market-images",
+                Key: key
+            })
+            await client.send(command)
+            key = `${req.file.originalname}-${Date.now()}`
+            command = new PutObjectCommand({
+                Body: buffer,
+                Bucket: "sustainability-market-images",
+                Key: key,
+                ContentType: req.file.mimetype
+            })
+            prodImage = `https://sustainability-market-images.s3.us-east-1.amazonaws.com/${key}`
+            product = await model.findOneAndUpdate({vendor:UserId,_id:id},{...req.body,image:prodImage},{returnDocument:"after",runValidators:true})
+            
+    
+    }
+    
+    
+    else{
+        product = await model.findOne({vendor:UserId,_id:id},req.body,{runValidators:true,returnDocument:"after"})
+    }
+    if(!product) throw new notFound("Product doesn't exist in database")
+        res.status(StatusCodes.OK).json({success:true,product,message:`Product updated successfully`})
+    }
+    
+module.exports = {createProduct,getProducts,deleteProduct,getProduct,updateProduct}

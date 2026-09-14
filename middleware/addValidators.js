@@ -1,3 +1,3 @@
-const {param} = require('express-validator')
+const {param,body} = require('express-validator')
 
-module.exports = [param('id').notEmpty()]
+module.exports = [[param('id').notEmpty()],[body('name').notEmpty(),body('price').notEmpty().isNumeric(),body('description').notEmpty().isLength({max:160})],[body('name').notEmpty().optional(),body('price').notEmpty().optional().isNumeric(),body('description').notEmpty().optional().isLength({max:160})]]

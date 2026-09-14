@@ -5,10 +5,18 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 const connectDB = require('./database/connectDB')
 const authRouter = require('./routes/authRoutes')
+const authMid = require('./middleware/authMid')
+const prodRouter = require('./routes/productsRoutes')
 const errorHandler = require('./middleware/errorHandlerMid')
 
 app.use('/market/v1/auth',authRouter)
+app.use('/market/v1/products',authMid,prodRouter)
 const port = process.env.port || 3000
+
+
+
+
+
 
 const start = async()=>{
     try {

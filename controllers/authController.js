@@ -16,6 +16,6 @@ const login = async(req,res)=>{
     const isMatch = await user.comparePassword(password)
     if(!isMatch) throw new badRequest('Wrong password')
     const token = user.createJWT()
-    res.status(StatusCodes.OK).json({success:true,user:{name:user.name,email,role:user.role},token,message:`Login successful`})
+    res.status(StatusCodes.OK).json({success:true,user:{name:user.name,email,role:user.role,userID:user._id},token,message:`Login successful`})
 }
 module.exports = {register,login}

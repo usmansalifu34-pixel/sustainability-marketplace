@@ -6,7 +6,7 @@ const validate = (req,res,next)=>{
         next()
     }
     else{
-        throw new badRequest('Please fill all fields')
+        throw new badRequest(response.array())
     }
 }
 module.exports = validate

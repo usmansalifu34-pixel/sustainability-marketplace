@@ -1,3 +1,3 @@
-const {body} = require('express-validator')
+const {param} = require('express-validator')
 
-module.exports = []
+module.exports = [param('id').notEmpty()]

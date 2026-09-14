@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {authError} = require('../errors')
 const model = require('../models/userModel')
-const authMid = (req,res,next)=>{
+const authMid = async (req,res,next)=>{
     const authHeader = req.headers.authorization
     if(!authHeader||!authHeader.startsWith('Bearer '))throw new authError('Invalid token')
     const token = authHeader.split(' ')[1]
@@ -12,9 +12,13 @@ const authMid = (req,res,next)=>{
         req.user = {
             name: payload.name,
             email: payload.email,
-            role: payload.role
+            role: payload.role,
+            UserId:payload.UserId
     }
-    } catch (error) {
+
+    next()
+    } 
+    catch (error) {
         if(error instanceof(authError)) throw new authError('User doesn\'t exist')
         throw new authError('Invalid token')
     }

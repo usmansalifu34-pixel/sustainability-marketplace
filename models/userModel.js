@@ -13,7 +13,7 @@ userSchema.pre('save',async function(){
     this.password = await bcrypt.hash(this.password,salt)
 })
 userSchema.methods.createJWT = function(){
-    return jwt.sign({name:this.name,role:this.role,email:this.email},process.env.jwt_secret,{expiresIn:process.env.jwt_lifetime})
+    return jwt.sign({name:this.name,role:this.role,email:this.email,UserId:this._id},process.env.jwt_secret,{expiresIn:process.env.jwt_lifetime})
 }
 userSchema.methods.comparePassword = async function(testPassword){
     const isMatch = await bcrypt.compare(testPassword,this.password)

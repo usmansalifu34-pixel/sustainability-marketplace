@@ -13,7 +13,8 @@ const client = new S3Client({
 
 const createProduct = async(req,res)=>{
     const {role,UserId} = req.user
-    //console.log(role,UserId)
+    //console.log(req.body)
+    const {quantity} = req.body
     if(role!=='vendor') throw new authError('You are not authorized to access this route')
     const key = `${req.file.originalname}-${Date.now()}`
     const command = new PutObjectCommand({
@@ -26,7 +27,7 @@ const createProduct = async(req,res)=>{
     //console.log(result)
 
     const imageUrl = `https://sustainability-market-images.s3.us-east-1.amazonaws.com/${key}`
-    const product = await model.create({...req.body,image:imageUrl,vendor:UserId})
+    const product = await model.create({...req.body,image:imageUrl,vendor:UserId,stockQuantity:quantity})
     res.status(StatusCodes.CREATED).json({success:true,product,message:`Product was successfully created`})
 }
 const getProducts = async (req,res)=>{

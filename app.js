@@ -5,12 +5,16 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 const connectDB = require('./database/connectDB')
 const authRouter = require('./routes/authRoutes')
-const authMid = require('./middleware/authMid')
 const prodRouter = require('./routes/productsRoutes')
+const cartRouter = require('./routes/cartRouter')
+
+const authMid = require('./middleware/authMid')
 const errorHandler = require('./middleware/errorHandlerMid')
+const notFound = require('./middleware/notFoundMid')
 
 app.use('/market/v1/auth',authRouter)
 app.use('/market/v1/products',authMid,prodRouter)
+app.use('/market/v1/cart',authMid,cartRouter)
 const port = process.env.port || 3000
 
 
@@ -24,6 +28,7 @@ const start = async()=>{
         console.log(`Database connected successfully`)
         app.listen(3000,()=>{console.log(`Server is listening on port ${port}`)})
         app.use(errorHandler)
+        app.use(notFound)
     } catch (error) {
         console.error(`Unable to connect to database`)
     }

@@ -19,5 +19,8 @@
     "mongoose": "^9.10.0",
     "multer": "^2.3.0"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "jest": "^30.5.1"
+  }
 }

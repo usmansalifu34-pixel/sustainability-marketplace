@@ -6,7 +6,11 @@ const validate = (req,res,next)=>{
         next()
     }
     else{
-        throw new badRequest(response.array())
+        let errors = response.array().map((err)=>{
+            return `${err.msg} for ${err.path}`
+        })
+        throw new badRequest(errors)
+
     }
 }
 module.exports = validate

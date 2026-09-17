@@ -4,6 +4,7 @@ const productSchema = new mongoose.Schema({
     price: {type:Number, required:[true,"Enter product cost"]},
     image: {type:String},
     description: {type:String, required:[true,"Add a bried description of the product"], maxLength:160},
+    stockQuantity:{type:Number,required:[true,"Please enter stock quantity of product"]},
     vendor: {type:mongoose.Schema.Types.ObjectId,ref:"User", required:true}
 })
 

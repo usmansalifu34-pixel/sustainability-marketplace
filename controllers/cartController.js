@@ -3,6 +3,7 @@ const {badRequest,authError,notFound} = require('../errors')
 const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel')
 const orderModel = require('../models/orderModel')
+const idempModel = require('../models/idempotencyObject')
 const addToCart = async (req,res)=>{
     const {id,quantity} = req.body
     const {UserId} = req.user
@@ -27,6 +28,7 @@ const getCart = async (req,res)=>{
 
 const checkOut = async (req,res) =>{
     const {UserId,name} = req.user
+    const {idempotencyKey} = req.headers
     let cart = await cartModel.findOne({UserId}).populate("items.productId")
     if(!cart) throw new badRequest("User doesn't have a cart")
     const {items} = cart
@@ -41,10 +43,19 @@ const checkOut = async (req,res) =>{
     { $inc: { stockQuantity: -item.quantity } },
     {returnDocument:"after"}
   );
-  if (!updatedProduct) throw new badRequest(`Not enough stock for ${item.productId.name}`);
+  if (!updatedProduct) {
+        await productModel.findOneAndUpdate(
+    { _id: item.productId._id, stockQuantity: { $gte: item.quantity } },
+    { $inc: { stockQuantity: stockQuantity+item.quantity } },
+    {returnDocument:"after"}
+  );
+        await idempModel.findOneAndDelete({idempotencyKey})
+        throw new badRequest(`Not enough stock for ${item.productId.name}`);
+}
 }));
     cart = await cartModel.findOneAndDelete({UserId})
     const order = await orderModel.create({UserId,totalCost,CustomerName:name})
+    await idempModel.findOneAndDelete({idempotencyKey})
     res.status(StatusCodes.OK).json({success:true,order,message:`Purchases made successfully`})
 }
 

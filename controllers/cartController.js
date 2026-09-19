@@ -2,6 +2,7 @@ const {StatusCodes} = require('http-status-codes')
 const {badRequest,authError,notFound} = require('../errors')
 const cartModel = require('../models/cartModel')
 const productModel = require('../models/productModel')
+const mongoose = require('mongoose')
 const orderModel = require('../models/orderModel')
 const idempModel = require('../models/idempotencyObject')
 const addToCart = async (req,res)=>{
@@ -26,37 +27,58 @@ const getCart = async (req,res)=>{
 
 }
 
-const checkOut = async (req,res) =>{
-    const {UserId,name} = req.user
-    const {idempotencyKey} = req.headers
-    let cart = await cartModel.findOne({UserId}).populate("items.productId")
-    if(!cart) throw new badRequest("User doesn't have a cart")
-    const {items} = cart
-    
-    const totalCost = items.reduce((total,nextItem)=>{
-        return total + (nextItem.productId.price *nextItem.quantity)
-    },0)
-    console.log(totalCost)
-    await Promise.all(items.map(async (item) => {
-  const updatedProduct = await productModel.findOneAndUpdate(
-    { _id: item.productId._id, stockQuantity: { $gte: item.quantity } },
-    { $inc: { stockQuantity: -item.quantity } },
-    {returnDocument:"after"}
-  );
-  if (!updatedProduct) {
-        await productModel.findOneAndUpdate(
-    { _id: item.productId._id, stockQuantity: { $gte: item.quantity } },
-    { $inc: { stockQuantity: stockQuantity+item.quantity } },
-    {returnDocument:"after"}
-  );
-        await idempModel.findOneAndDelete({idempotencyKey})
-        throw new badRequest(`Not enough stock for ${item.productId.name}`);
-}
-}));
-    cart = await cartModel.findOneAndDelete({UserId})
-    const order = await orderModel.create({UserId,totalCost,CustomerName:name})
-    await idempModel.findOneAndDelete({idempotencyKey})
-    res.status(StatusCodes.OK).json({success:true,order,message:`Purchases made successfully`})
-}
+const checkOut = async (req, res) => {
+  const { UserId, name } = req.user;
+  const { idempotencykey } = req.headers;
 
+  const cart = await cartModel.findOne({ UserId }).populate("items.productId");
+  if (!cart) throw new badRequest("User doesn't have a cart");
+  const { items } = cart;
+
+  const totalCost = items.reduce((total, item) => {
+    return total + (item.productId.price * item.quantity);
+  }, 0);
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  let order;
+  try {
+    // 1. Deduct stock, one item at a time — sequential, not Promise.all
+    for (const item of items) {
+      const updatedProduct = await productModel.findOneAndUpdate(
+        { _id: item.productId._id, stockQuantity: { $gte: item.quantity } },
+        { $inc: { stockQuantity: -item.quantity } },
+        { session, returnDocument: "after" }
+      );
+      if (!updatedProduct) {
+        throw new badRequest(`Not enough stock for ${item.productId.name}`);
+      }
+    }
+
+    // 2. Create the order (array syntax required when passing a session)
+    const created = await orderModel.create([{ UserId, totalCost, CustomerName: name }], { session });
+    order = created[0];
+
+    // 3. Clear the cart
+    await cartModel.findOneAndDelete({ UserId }, { session });
+
+    // 4. Mark idempotency record complete
+    await idempModel.findOneAndUpdate(
+      { key: idempotencykey },
+      { status: "Complete", orderId: order._id },
+      { session }
+    );
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    await idempModel.findOneAndDelete({ key: idempotencykey }); // outside the aborted transaction
+    throw error;
+  } finally {
+    session.endSession();
+  }
+
+  res.status(StatusCodes.OK).json({ success: true, order, message: `Purchases made successfully` });
+};
 module.exports = {addToCart,getCart,checkOut}

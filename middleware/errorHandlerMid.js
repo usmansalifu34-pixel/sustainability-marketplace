@@ -1,17 +1,28 @@
-const {StatusCodes} = require('http-status-codes')
+const { StatusCodes } = require('http-status-codes')
+const customError  = require('../errors/createCustomError')
 const errorHandler = (err,req,res,next)=>{
+    //console.log(err.message);
+    
     let customErr = {
-        message : err.message,
-        statusCode:err.statusCode || 500
+        statusCode:err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+        msg: err.message|| 'Something went wrong'
     }
-    if(err.code===11000){
-        const {keyValue} = err
-        const duplicates = Object.keys(keyValue)
-        customErr.message = `${duplicates} already exists in database`
-        customErr.statusCode = StatusCodes.BAD_REQUEST
+
+    if(err.name==='ValidationError'){
+        customErr.msg = Object.values(err.errors).map((item)=>item.message).join(',')
+        customErr.statusCode = 400
     }
-    //console.log(err.statusCode)
-    res.status(customErr.statusCode).json(err.message)
-    //res.status(customErr.statusCode).json({message:customErr.message})
+    if(err.name==='CastError'){
+        customErr.msg  = `No item found with id :${err.value}`
+        customErr.statusCode = 404
+    }
+
+    if(err.code && err.code ===11000 ){
+        customErr.msg = `Duplicate value entered for ${Object.keys(err.keyValue)} field, please choose another value`
+        customErr.statusCode = 400
+    }
+    // return res.status(customErr.statusCode).json(err)
+    return res.status(customErr.statusCode).json(customErr)
 }
+
 module.exports = errorHandler

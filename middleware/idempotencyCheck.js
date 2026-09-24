@@ -6,7 +6,7 @@ const {StatusCodes} = require('http-status-codes')
 
 const getKey = async (req,res,next)=>{
     const {idempotencykey} = req.headers
-    console.log(idempotencykey)
+    //console.log(idempotencykey)
     const idempObject = await idempModel.findOne({key:idempotencykey})
     if(!idempObject){
         await idempModel.create({key:idempotencykey,status:"Pending"})

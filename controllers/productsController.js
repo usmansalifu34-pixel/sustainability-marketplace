@@ -12,10 +12,10 @@ const client = new S3Client({
 })
 
 const createProduct = async(req,res)=>{
-    const {role,UserId} = req.user
-    //console.log(req.body)
+    const {role,UserId,status} = req.user
+    //console.log(req.file)
     const {quantity} = req.body
-    if(role!=='vendor') throw new authError('You are not authorized to access this route')
+    if(role!=='vendor'|| status!=="verified") throw new authError('You are not authorized or verified to access this route')
     const key = `${req.file.originalname}-${Date.now()}`
     const command = new PutObjectCommand({
         Body: req.file.buffer,

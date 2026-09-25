@@ -1,6 +1,7 @@
 const idempModel = require('../models/idempotencyObject')
 const orderModel = require('../models/orderModel')
 const {badRequest} = require('../errors')
+const customErr = require('../errors/customErr')
 const {StatusCodes} = require('http-status-codes')
 
 
@@ -13,7 +14,7 @@ const getKey = async (req,res,next)=>{
         next()
     }
     else{
-        if(idempObject.status==='Pending') throw new StatusCodes.CONFLICT
+        if(idempObject.status==='Pending') throw new customErr("Request already sent",StatusCodes.CONFLICT)
         const order = await orderModel.findOne({_id:idempObject.orderId})
         res.status(StatusCodes.OK).json({success:true, order, message:`Order made successfully`})
     }

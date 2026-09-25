@@ -7,4 +7,5 @@ module.exports = [
             [body('id').notEmpty(),body('quantity').notEmpty().bail().isNumeric()],
             [header('idempotencyKey').isUUID().notEmpty()],
             [body('businessName').notEmpty(),body('businessDescription').notEmpty().isLength({max:250})],
+            [param('vendorId').notEmpty(),body('status').notEmpty()],
             [param('vendorId').notEmpty(),body('status').notEmpty()]]

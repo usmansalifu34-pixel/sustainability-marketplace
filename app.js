@@ -8,6 +8,7 @@ const authRouter = require('./routes/authRoutes')
 const prodRouter = require('./routes/productsRoutes')
 const cartRouter = require('./routes/cartRouter')
 const vendorRouter = require('./routes/vendorRoute')
+const adminRouter = require('./routes/adminRouter')
 
 const cors = require('cors')
 const morgan = require('morgan')
@@ -30,7 +31,9 @@ app.use(helmet())
 app.use('/market/v1/auth',authRouter)
 app.use('/market/v1/products',authMid,prodRouter)
 app.use('/market/v1/cart',authMid,cartRouter)
-app.use('/market/v1/vendor',authMid,vendorRouter)           
+app.use('/market/v1/vendor',authMid,vendorRouter)  
+app.use('/market/v1/admin',authMid,adminRouter)
+         
 const port = process.env.port || 3000
 
 

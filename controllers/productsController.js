@@ -27,12 +27,12 @@ const createProduct = async(req,res)=>{
     //console.log(result)
 
     const imageUrl = `https://sustainability-market-images.s3.us-east-1.amazonaws.com/${key}`
-    const product = await model.create({...req.body,image:imageUrl,vendor:UserId,stockQuantity:quantity})
+    const product = await model.create({...req.body,image:imageUrl,vendor:UserId,stockQuantity:quantity,status:"pending"})
     res.status(StatusCodes.CREATED).json({success:true,product,message:`Product was successfully created`})
 }
 const getProducts = async (req,res)=>{
     let {price,sort,filter,name,page,amount} = req.query
-    const queryObject = {}
+    const queryObject = {status:"verified"}
     if(name){
         queryObject.name = {$regex: name,$options: "i"}
     }
@@ -73,8 +73,9 @@ const deleteProduct = async (req,res)=>{
 }
 const getProduct = async(req,res)=>{
     const {id} = req.params
-    const product = await model.findOne({_id:id})
+    const product = await model.findOne({_id:id,status:"verified"})
     if(!product) throw new notFound("Product doesn't exist")
+
     res.status(StatusCodes.OK).json({success:true,product,message:`Product fetched successfully`})
 }
 
@@ -89,7 +90,7 @@ const updateProduct = async (req,res)=>{
             let prod = await model.findOne({_id:id})
             if(!prod) throw new notFound("Product doesn't exist in database")
             let prodImage = prod.image
-            let key = prodImage.slice(prodImage.lastIndexOf('/'))
+            let key = prodImage.slice(prodImage.lastIndexOf('/')+1)
             let command = new DeleteObjectCommand({
                 Bucket: "sustainability-market-images",
                 Key: key
@@ -110,10 +111,40 @@ const updateProduct = async (req,res)=>{
     
     
     else{
-        product = await model.findOne({vendor:UserId,_id:id},req.body,{runValidators:true,returnDocument:"after"})
+        product = await model.findOneAndUpdate({vendor:UserId,_id:id},req.body,{runValidators:true,returnDocument:"after"})
     }
     if(!product) throw new notFound("Product doesn't exist in database")
         res.status(StatusCodes.OK).json({success:true,product,message:`Product updated successfully`})
     }
+
+
+const getProductsAdmin = async (req,res)=>{
+    let {status,page,count} = req.query
+    if(!page) page = 1
+    if(!count) count  = 5
+    let amount = (page-1)*count
+    const products = await model.find({status}).skip(amount).limit(count)
+    res.status(StatusCodes.OK).json({success:true, products,message:"Products fetched successfully",noHits:products.length})
     
-module.exports = {createProduct,getProducts,deleteProduct,getProduct,updateProduct}
+}
+
+const getProductAdmin = async (req,res)=>{
+    const {productId} = req.params
+    const product = await model.findOne({_id:productId})
+    if(!product) throw new notFound("Product doesn't exist")
+        res.status(StatusCodes.OK).json({success:true,product,message:"Product fetched successfully"})
+}
+
+const verifyProduct = async (req,res)=>{
+    const {productId} = req.params
+    const {status} = req.body
+    const product = await model.findOneAndUpdate({_id:productId},{status},{returnDocument:"after",runValidators:true})
+    if(status==="verified") res.status(StatusCodes.OK).json({success:true,product,message:"Product verified successfully"})
+    else{
+        res.status(StatusCodes.OK).json({success:true,product,message:"Product rejected successfully"})
+    }
+}
+
+module.exports = {createProduct,getProducts,
+                deleteProduct,getProduct,
+                updateProduct,getProductsAdmin,verifyProduct,getProductAdmin}

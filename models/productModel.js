@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema({
     image: {type:String},
     description: {type:String, required:[true,"Add a bried description of the product"], maxLength:160},
     stockQuantity:{type:Number,required:[true,"Please enter stock quantity of product"]},
+    status: {type:String, default:"pending", enum: ["pending","verified","rejected"]},
     vendor: {type:mongoose.Schema.Types.ObjectId,ref:"User", required:true}
 })
 

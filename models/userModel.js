@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema({
     name:{type:String, required:[true,"Please enter your name"]},
     password: {type:String, required:[true,"Please enter your password"], minLength:6},
     email:{type:String, required: [true,"Please enter an email"],unique:true,match:[/^[^\s@]+@[^\s@]+\.[^\s@]+$/,"Please enter a valid email"]},
-    role: {type:String, default: "customer", enum:["customer","vendor"]},
-    status: {type:String,default: "verified", enum: ["verified","pending"]},
+    role: {type:String, default: "customer", enum:["customer","vendor","admin"]},
+    status: {type:String,default: "verified", enum: ["verified","pending","rejected"]},
     businessName: {type:String},
     businessDescription: {type:String, maxLength: 250}
 })

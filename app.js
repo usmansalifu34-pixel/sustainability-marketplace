@@ -30,7 +30,7 @@ app.use(helmet())
 app.use('/market/v1/auth',authRouter)
 app.use('/market/v1/products',authMid,prodRouter)
 app.use('/market/v1/cart',authMid,cartRouter)
-app.use('/market/v1/vendor')
+app.use('/market/v1/vendor',authMid,vendorRouter)           
 const port = process.env.port || 3000
 
 

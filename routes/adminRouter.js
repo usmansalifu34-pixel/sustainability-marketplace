@@ -8,8 +8,9 @@ const checkValidity = require('../middleware/checkValidation')
 const {listVendors,verifyVendor,getVendor} = require('../controllers/vendorController')
 const {getProductsAdmin,verifyProduct,getProductAdmin} = require('../controllers/productsController')
 router.route('/vendors').get(isAdmin,listVendors)
-router.route('/vendors/:vendorId').patch(addValidators[6],checkValidity,isAdmin,verifyVendor)
-            .get([param('vendorId').notEmpty()],checkValidity,isAdmin,getVendor)
+router.patch('/vendors/verify/:vendorId',addValidators[6],checkValidity,isAdmin,verifyVendor)
+
+router.get('/vendors/:vendorId',[param('vendorId').notEmpty()],checkValidity,isAdmin,getVendor)
 
 router.route('/products').get(isAdmin,getProductsAdmin)
 router.route('/products/:productId').patch(addValidators[7],checkValidity,isAdmin,verifyProduct)

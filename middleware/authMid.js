@@ -13,6 +13,7 @@ const authMid = async (req,res,next)=>{
             name: payload.name,
             email: payload.email,
             role: payload.role,
+            status: payload.status,
             UserId:payload.UserId
     }
 

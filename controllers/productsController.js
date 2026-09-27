@@ -15,7 +15,7 @@ const createProduct = async(req,res)=>{
     const {role,UserId,status} = req.user
     //console.log(req.file)
     const {quantity} = req.body
-    if(role!=='vendor'|| status!=="verified") throw new authError('You are not authorized or verified to access this route')
+    if(role!=="vendor"|| status!=="verified") throw new authError('You are not authorized or verified to access this route')
     const key = `${req.file.originalname}-${Date.now()}`
     const command = new PutObjectCommand({
         Body: req.file.buffer,
@@ -32,7 +32,7 @@ const createProduct = async(req,res)=>{
 }
 const getProducts = async (req,res)=>{
     let {price,sort,filter,name,page,amount} = req.query
-    const queryObject = {status:"verified"}
+    const queryObject = {}
     if(name){
         queryObject.name = {$regex: name,$options: "i"}
     }

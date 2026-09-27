@@ -1,10 +1,23 @@
-const {} = require('../errors')
+const {badRequest} = require('../errors')
 const{StatusCodes} = require('http-status-codes')
+const cartModel = require('../models/cartModel')
 const orderModel = require('../models/orderModel')
 
+const getAllOrders = async (req,res)=>{
+    const {UserId} = req.user
+    let {select,page,count} = req.query
+    if(select){
+        select = select.split(',').map((element)=>element.trim()).join(' ')
+    }
+    if(!page) page = 1
+    if(!count) count = 5
+    let amount = (page-1) * count
+    const orders = await orderModel.find({UserId}).select(select).skip(amount).limit(count)
+    if(!orders) throw new badRequest('User hasn\'t made any orders')
+    return res.status(StatusCodes.OK).json({success:true,orders,message:"User's orders fetched successfully",noHits:orders.length})
+}
 
-
-const checkOut = async (req, res) => {
+const createOrder = async (req, res) => {
   const { UserId, name } = req.user;
   const { idempotencykey } = req.headers;
 
@@ -59,4 +72,11 @@ const checkOut = async (req, res) => {
   res.status(StatusCodes.OK).json({ success: true, order, message: `Purchases made successfully` });
 };
 
-module.exports = {checkOut}
+const getOrder = async (req,res)=>{
+    const {orderId} = req.params
+    const {UserId} = req.user
+    const order = await orderModel.findOne({_id:orderId,UserId})
+    if(!order) throw new badRequest("This order doesn't exist")
+    return res.status(StatusCodes.OK).json({success:true, order,message:"Order fetched successfully"})
+}
+module.exports = {createOrder,getAllOrders,getOrder}

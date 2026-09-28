@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon app"
   },
   "keywords": [],
@@ -27,7 +27,8 @@
   },
   "description": "",
   "devDependencies": {
-    "jest": "^30.5.1",
-    "nodemon": "^3.1.14"
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.0"
   }
 }

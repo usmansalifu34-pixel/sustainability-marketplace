@@ -31,7 +31,16 @@ const initPayment = async (req,res)=>{
     }
    
 }
-
+const verifyPayment = async(req,res)=>{
+    const {reference} = req.params
+    const response = await axios.get(`https://api.paystack.co/transaction/verify/:${reference}`,{
+        headers: {
+            Authorization : `Bearer ${process.env.PAYSTACK_TESTKEY}`
+        }
+    })
+    if(response.data.status!=='success')throw new badRequest('Payment verification failed')
+    
+}
 module.exports = {
     initPayment
 }

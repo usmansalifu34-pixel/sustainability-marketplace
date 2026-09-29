@@ -59,7 +59,7 @@ const confirmPaymentWebhook = async (req,res)=>{
         order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
     }
     else{
-        order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"payment failed"},{returnDocument:"after",runValidators:true})
+        order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"payment_failed"},{returnDocument:"after",runValidators:true})
     }
     return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment was successful"})
 }

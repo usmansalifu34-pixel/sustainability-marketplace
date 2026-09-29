@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
     CustomerName:{type:String, required:true},
     orderStatus: {
     type: String,
-    enum: ['pending_payment', 'payment failed','paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'],
+    enum: ['pending_payment', 'payment_failed','paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'],
     default: 'pending_payment'
     },
     orderRef: {type:String}

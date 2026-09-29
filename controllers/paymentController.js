@@ -50,9 +50,9 @@ const verifyPayment = async(req,res)=>{
 const confirmPaymentWebhook = async (req,res)=>{
 
     const paystackHash = req.headers['x-paystack-signature']
-    const hash = crypto.createHmac('sha512',process.env.PAYSTACK_TESTKEY).update(json.stringify(req.body)).digest('hex')
+    const hash = crypto.createHmac('sha512',process.env.PAYSTACK_TESTKEY).update(req.body).digest('hex')
     if(hash!==paystackHash) throw new authErr('Invalid key')
-    const {event} = req.body
+    const {event} = JSON.parse(req.body)
     const {reference} = req.body.data
     let order
     if(event=== "charge.success"){

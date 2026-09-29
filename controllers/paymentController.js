@@ -2,6 +2,9 @@ const {badRequest} = require('../errors')
 const {StatusCodes} = require('http-status-codes')
 const axios = require('axios')
 const orderModel = require('../models/orderModel')
+const crypto = require('crypto')
+
+
 const initPayment = async (req,res)=>{
     const {UserId,email} = req.user
     const {orderId} = req.params
@@ -42,6 +45,22 @@ const verifyPayment = async(req,res)=>{
     const order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:'after',runValidators:true})
     if(!order) throw new badRequest('Order doesn\'t exist')
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order paid for successfully"})
+}
+
+const confirmPayment = async (req,res)=>{
+
+    const paystackHash = req.headers['x-paystack-signature']
+    const hash = crypto.createHmac('sha512',process.env.PAYSTACK_TESTKEY).update(req.body).digest('hex')
+    if(hash!==paystackHash) throw new authErr('Invalid key')
+    const {event} = req.body
+    const {reference} = req.body.data
+    if(event= "charge.success"){
+        let order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
+    }
+    else{
+        let order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"payment failed"},{returnDocument:"after",runValidators:true})
+    }
+    return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment was successful"})
 }
 module.exports = {
     initPayment, verifyPayment

@@ -47,7 +47,7 @@ const verifyPayment = async(req,res)=>{
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order paid for successfully"})
 }
 
-const confirmPayment = async (req,res)=>{
+const confirmPaymentWebhook = async (req,res)=>{
 
     const paystackHash = req.headers['x-paystack-signature']
     const hash = crypto.createHmac('sha512',process.env.PAYSTACK_TESTKEY).update(req.body).digest('hex')
@@ -63,5 +63,5 @@ const confirmPayment = async (req,res)=>{
     return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment was successful"})
 }
 module.exports = {
-    initPayment, verifyPayment
+    initPayment, verifyPayment, confirmPaymentWebhook
 }

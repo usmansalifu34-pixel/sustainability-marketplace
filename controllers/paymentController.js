@@ -54,7 +54,7 @@ const confirmPaymentWebhook = async (req,res)=>{
     if(hash!==paystackHash) throw new authErr('Invalid key')
     const {event} = req.body
     const {reference} = req.body.data
-    if(event= "charge.success"){
+    if(event=== "charge.success"){
         let order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
     }
     else{

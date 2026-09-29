@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 
-const {initPayment,verifyPayment,confirmPayment} = require('../controllers/paymentController')
+const {initPayment,verifyPayment,confirmPaymentWebhook} = require('../controllers/paymentController')
 router.route('/initialize/:orderId').post(initPayment)
 router.patch('/verify/:reference', verifyPayment)
-router.post('/webhook',confirmPayment)
+router.post('/webhook',confirmPaymentWebhook)
 
 module.exports = router

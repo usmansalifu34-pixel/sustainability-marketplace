@@ -51,16 +51,20 @@ const confirmPaymentWebhook = async (req,res)=>{
 
     const paystackHash = req.headers['x-paystack-signature']
     const hash = crypto.createHmac('sha512',process.env.PAYSTACK_TESTKEY).update(req.body).digest('hex')
-    if(hash!==paystackHash) throw new authErr('Invalid key')
+    //console.log(paystackHash,hash)
+    if(hash!==paystackHash) throw new authError('Invalid key')
     const {event} = JSON.parse(req.body)
-    const {reference} = req.body.data
+    const {reference} = JSON.parse(req.body).data
+    console.log(reference)
     let order
     if(event=== "charge.success"){
         order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
+        if(!order) throw new badRequest('No order has that reference number')
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment was successful"})
     }
     else{
         order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"payment_failed"},{returnDocument:"after",runValidators:true})
+        if(!order) throw new badRequest('No order has that reference number')
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment failed"})
     }
     

@@ -1,6 +1,11 @@
 const express = require('express')
 const app = express()
 require('dotenv').config()
+
+const orderRouter = require('./routes/orderRouter')
+const {confirmPaymentWebhook} = require('./controllers/paymentController')
+app.post('/market/v1/payment/webhook', express.raw({ type: 'application/json' }),confirmPaymentWebhook)
+
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 const connectDB = require('./database/connectDB')
@@ -10,7 +15,8 @@ const cartRouter = require('./routes/cartRouter')
 const vendorRouter = require('./routes/vendorRoute')
 const adminRouter = require('./routes/adminRouter')
 const paymentRouter = require('./routes/paymentRouter')
-const orderRouter = require('./routes/orderRouter')
+
+
 
 const cors = require('cors')
 const morgan = require('morgan')

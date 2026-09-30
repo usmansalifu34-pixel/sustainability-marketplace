@@ -11,7 +11,7 @@ const initPayment = async (req,res)=>{
     let order = await orderModel.findOne({UserId,_id:orderId})
     console.log(UserId, orderId)
     if(!order) throw new badRequest("Order doesn't exist")
-        if(order.status!=='payment_pending') throw new badRequest('Payment already initialized')
+        if(order.orderStatus!=='payment_pending') throw new badRequest('Payment already initialized')
     const {totalCost} = order
     try {
          const response = await axios.post('https://api.paystack.co/transaction/initialize',

@@ -11,7 +11,7 @@ const initPayment = async (req,res)=>{
     let order = await orderModel.findOne({UserId,_id:orderId})
     console.log(UserId, orderId)
     if(!order) throw new badRequest("Order doesn't exist")
-        if(order.orderStatus!=='payment_pending') throw new badRequest('Payment already initialized')
+        if(order.orderStatus==='paid') return res.status(StatusCodes.OK).json({success:true, order,message:'Order already paid for'})
     const {totalCost} = order
     try {
          const response = await axios.post('https://api.paystack.co/transaction/initialize',
@@ -27,7 +27,7 @@ const initPayment = async (req,res)=>{
         return res.status(StatusCodes.BAD_REQUEST).json({message:response.data.message})
     }
     const {authorization_url,reference} = response.data.data
-    order = await orderModel.findOneAndUpdate({UserId,_id:orderId},{orderRef:reference},{returnDocument:"after",runValidators:true})
+    order = await orderModel.findOneAndUpdate({UserId,_id:orderId},{orderRef:reference,paymentUrl:authorization_url},{returnDocument:"after",runValidators:true})
     res.status(StatusCodes.OK).json({success:true,authUrl:authorization_url,message:"Payment successfully initialized"})
     } 
     catch (error) {
@@ -58,6 +58,7 @@ const confirmPaymentWebhook = async (req,res)=>{
     const {reference} = JSON.parse(req.body).data
     console.log(reference)
     let order
+    console.log('NOTICE MEEEE')
     if(event=== "charge.success"){
         order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
         if(!order) throw new badRequest('No order has that reference number')

@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending_payment', 'payment_failed','paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'],
     default: 'pending_payment'
     },
-    orderRef: {type:String}
+    orderRef: {type:String},
+    paymentUrl:{type:String}
 })
 module.exports = mongoose.model("Order",orderSchema)

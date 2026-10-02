@@ -65,25 +65,27 @@ const deductFromCart = async (req,res)=>{
   const {UserId} = req.user
   const {quantity} = req.body
   const cart = await cartModel.findOne({UserId})
+  if(!cart) throw new badRequest('User doesn\'t have a cart')
   const {items} = cart
-  const product = items.find((item)=>{
+  const product = items.find((item)=>
     item.productId.toString() ===productId
-  })
+  )
   if(!product) throw new badRequest('This item isn\'t in your cart')
   const prodQuantity = product.quantity
   if(quantity>prodQuantity) throw new badRequest('Specified quantity to delete exceeds quantity of product present in the cart')
   else if(quantity-prodQuantity ===0){
-        await cartModel.deleteOne({_id:cartId,UserId},{$pull:{items:{_id:productId}}})
+        await cartModel.deleteOne({_id:cartId,UserId,'items.productId':productId})
         if(items.length===1){
           let cart = await cartModel.findOneAndDelete({_id:cartId,UserId})
           return res.status(StatusCodes.OK).json({success:true,cart,message:`Cart deleted successfully`})
         }
+        return res.status(StatusCodes.OK).json({success:true,cart,message:`product deducted successfully`})
   }
   else{
-    let cart = await cartModel.updateOne({UserId,_id:cartId,'items.productId':productId},{$push: {'items.$.quantity':-quantity}})
+    let cart = await cartModel.updateOne({UserId,_id:cartId,'items.productId':productId},{$inc: {'items.$.quantity':-quantity}})
     return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart data updated successfully"})
   }
 
 
 }
-module.exports = {addToCart,getCart,deleteCart,deleteFromCart}
+module.exports = {addToCart,getCart,deleteCart,deleteFromCart,deductFromCart}

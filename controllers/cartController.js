@@ -44,5 +44,12 @@ const getCart = async (req,res)=>{
         res.status(StatusCodes.OK).json({success:true, cart,message:`Cart fetched successfully`})
 
 }
-
-module.exports = {addToCart,getCart}
+const deleteCart = async (req,res)=>{
+  const {cartId} = req.params
+  const {UserId} = req.user
+  if(!cartId) throw new badRequest("Cart id expected")
+    const cart  = await cartModel.findOneAndDelete({_id:cartId,UserId})
+  if(!cart) throw new badRequest('User doesn\'t have a cart to delete')
+    return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart deleted successfully"})
+}
+module.exports = {addToCart,getCart,deleteCart}

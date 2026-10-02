@@ -1,7 +1,7 @@
 const {authError, badRequest} = require('../errors')
 const {StatusCodes} = require('http-status-codes')
 const userModel = require('../models/userModel')
-
+const orderModel = require('../models/orderModel')
 const updateProfile = async (req,res)=>{
     const {businessName,businessDescription} = req.body
     const {UserId,role} = req.user
@@ -47,4 +47,19 @@ const checkProfile = async (req,res)=>{
     const profile = await userModel.findOne({_id:UserId}).select('-password -__v')
     res.status(StatusCodes.OK).json({success:true, profile,message:"Vendor profile fetched successfully"})
 }
-module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile}
+
+const getPaidOrders = async (req,res)=>{
+    const {role,UserId} = req.user
+    if(role!=='vendor') throw new authError('User isn\'t authorised to use this route')
+    const orders  = await orderModel.find({orderStatus:'paid'})
+    if(!orders) throw new badRequest('No order has been paid for')
+    const allVendorsInvolved = orders.map((order)=>order.vendorsInvolved)
+    const isVendorInvolved = allVendorsInvolved.filter((vendorsInvolved)=>{
+        return vendorsInvolved.some(vendorsInvolved=>vendorsInvolved.vendorId==UserId)
+    })
+    console.log(isVendorInvolved)
+    res.status(StatusCodes.OK).send('yoooo')
+
+ 
+}
+module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders}

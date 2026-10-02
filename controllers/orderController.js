@@ -27,7 +27,7 @@ const createOrder = async (req, res) => {
   const cart = await cartModel.findOne({ UserId }).populate("items.productId");
   if (!cart) throw new badRequest("User doesn't have a cart");
   const { items } = cart;
-
+  const vendorsInvolved = []
   const totalCost = items.reduce((total, item) => {
     return total + (item.productId.price * item.quantity);
   }, 0);
@@ -44,13 +44,14 @@ const createOrder = async (req, res) => {
         { $inc: { stockQuantity: -item.quantity } },
         { session, returnDocument: "after" }
       );
+      vendorsInvolved.push({vendorId:item.vendor})
       if (!updatedProduct) {
         throw new badRequest(`Not enough stock for ${item.productId.name}`);
       }
     }
 
     // 2. Create the order (array syntax required when passing a session)
-    const created = await orderModel.create([{ UserId, totalCost, CustomerName: name }], { session });
+    const created = await orderModel.create([{ UserId, totalCost, CustomerName: name,items,vendorsInvolved }], { session });
     order = created[0];
 
     // 3. Clear the cart

@@ -5,10 +5,10 @@ const {param} = require('express-validator')
 const addValidators = require('../middleware/addValidators')
 const checkValidity = require('../middleware/checkValidation')
 
-const {updateProfile,checkProfile} = require('../controllers/vendorController')
+const {updateProfile,checkProfile,getPaidOrders} = require('../controllers/vendorController')
 
 
 router.route('/profile').post(addValidators[5],checkValidity,updateProfile).get(checkProfile)
-
+router.route('/orders').get(getPaidOrders)
 module.exports = router
 

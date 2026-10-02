@@ -52,4 +52,12 @@ const deleteCart = async (req,res)=>{
   if(!cart) throw new badRequest('User doesn\'t have a cart to delete')
     return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart deleted successfully"})
 }
-module.exports = {addToCart,getCart,deleteCart}
+const deleteFromCart = async (req,res)=>{
+  const {productId,cartId} = req.params
+  const {UserId} = req.user
+  if(!cartId) throw new badRequest("Cart id expected")
+    const cart  = await cartModel.updateOne({_id:cartId,UserId},{$pull:{items:{_id:productId}}})
+  if(!cart) throw new badRequest('Product doesn\'t exist in cart')
+    return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart deleted successfully"})
+}
+module.exports = {addToCart,getCart,deleteCart,deleteFromCart}

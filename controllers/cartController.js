@@ -65,7 +65,7 @@ const deductFromCart = async (req,res)=>{
   const {UserId} = req.user
   const {quantity} = req.body
   if(quantity<1) throw new badRequest('Expected positive number for quantity')
-  const cart = await cartModel.findOne({UserId})
+  let cart = await cartModel.findOne({UserId})
   if(!cart) throw new badRequest('User doesn\'t have a cart')
   const {items} = cart
   const product = items.find((item)=>
@@ -73,7 +73,7 @@ const deductFromCart = async (req,res)=>{
   )
   if(!product) throw new badRequest('This item isn\'t in your cart')
   const prodQuantity = product.quantity
-  let cart
+
   if(quantity>prodQuantity) throw new badRequest('Specified quantity to delete exceeds quantity of product present in the cart')
   else if(quantity===prodQuantity){
         cart = await cartModel.findOneAndUpdate({UserId},{$pull:{items:{productId}}},{returnDocument:"after"})

@@ -7,31 +7,33 @@ const orderModel = require('../models/orderModel')
 const idempModel = require('../models/idempotencyObject')
 const { findOneAndUpdate } = require('../models/userModel')
 const addToCart = async (req,res)=>{
+  //Get input data from request body
     const {id,quantity} = req.body
-    const {UserId} = req.user
-    if(quantity<1) throw new badRequest('Expected positive value for quantity')
-    const product = await productModel.findOne({_id:id})
-    if(!product) throw new notFound("Product doesn't exist in database")
-       if(quantity>product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`)
-    let cart = await cartModel.findOne({UserId})
+    const {UserId} = req.user //get the id of the current logged-in user
+    if(quantity<1) throw new badRequest('Expected positive value for quantity') //data validation
+    const product = await productModel.findOne({_id:id}) //Getting the product the user wants to add to cart
+    if(!product) throw new notFound("Product doesn't exist in database") //confirming the product exists
+       if(quantity>product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`) //Ensures requested quantity doesn't exceed stock quantity
+    let cart = await cartModel.findOne({UserId}) //finds the user's cart
   if(cart){
 
-    const {items} = cart
-    const cartProd = items.find((item)=>{
+    const {items} = cart //gets the items in the cart
+    const cartProd = items.find((item)=>{ //Checks if the product the user wants to add is in the user's cart
       
       return item.productId.toString() === id
     })
     if(cartProd){
-
+      //If the product is in the cart then checks if that quantity + the requested quantity exceeds stock quantity, if it doesn't then it just increases the quantity of the product in the cart
       if(cartProd.quantity + quantity > product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`)
       cart = await cartModel.findOneAndUpdate({UserId,"items.productId":id},{$inc: {"items.$.quantity":quantity}},{returnDocument: "after"})
     }
     else{
-        cart = await cartModel.findOneAndUpdate({UserId},{$push:{items: {productId:id,vendor:product.vendor,quantity}}},{returnDocument:"after",upsert:true})
+      //if the product wasn't already in the user's cart then push it to cart, 
+        cart = await cartModel.findOneAndUpdate({UserId},{$push:{items: {productId:id,vendor:product.vendor,quantity}}},{returnDocument:"after"})
     }
   }
     
-    else{
+    else{ //if the user doesn't have a cart then "upsert" would make a cart for the user then push that product to it
         cart = await cartModel.findOneAndUpdate({UserId},{$push:{items: {productId:id,vendor:product.vendor,quantity}}},{returnDocument:"after",upsert:true})
     }
     res.status(StatusCodes.OK).json({success:true,cart,message:`Product added to cart`})

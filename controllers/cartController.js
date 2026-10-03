@@ -56,9 +56,9 @@ const deleteFromCart = async (req,res)=>{
   const {productId} = req.params
   const {UserId} = req.user
 
-    const cart  = await cartModel.updateOne({UserId},{$pull:{items:{productId}}})
+    const cart  = await cartModel.findOneAndUpdate({UserId},{$pull:{items:{productId}}},{returnDocument:"after"})
   //if(!cart) throw new badRequest('Product doesn\'t exist in cart')
-    return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart updated successfully"})
+    return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart updated successfully"})
 }
 const deductFromCart = async (req,res)=>{
   const {productId}  = req.params

@@ -55,9 +55,17 @@ const deleteCart = async (req,res)=>{
 const deleteFromCart = async (req,res)=>{
   const {productId} = req.params
   const {UserId} = req.user
-
-    const cart  = await cartModel.findOneAndUpdate({UserId},{$pull:{items:{productId}}},{returnDocument:"after"})
-  //if(!cart) throw new badRequest('Product doesn\'t exist in cart')
+  let cart = await cartModel.findOne({UserId})
+  if(!cart) throw new badRequest('User doesn\'t have a cart')
+    let {items} = cart
+  let prod = items.find((item)=>item.productId.toString()===productId)
+  if(!prod) throw new badRequest('Item doesn\'t exist in cart')
+  cart  = await cartModel.findOneAndUpdate({UserId},{$pull:{items:{productId}}},{returnDocument:"after"})
+  if(!cart) throw new badRequest('User doesn\'t own a cart')
+    if(items.length===0){
+      await cartModel.findOneAndDelete({UserId})
+      return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart emptied and deleted successfully"})
+    }
     return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart updated successfully"})
 }
 const deductFromCart = async (req,res)=>{

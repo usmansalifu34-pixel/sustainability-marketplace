@@ -9,10 +9,10 @@ const { findOneAndUpdate } = require('../models/userModel')
 const addToCart = async (req,res)=>{
     const {id,quantity} = req.body
     const {UserId} = req.user
-    
+    if(quantity<1) throw new badRequest('Expected positive value for quantity')
     const product = await productModel.findOne({_id:id})
     if(!product) throw new notFound("Product doesn't exist in database")
-        // if(quantity>product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`)
+       if(quantity>product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`)
     let cart = await cartModel.findOne({UserId})
   if(cart){
 
@@ -45,25 +45,26 @@ const getCart = async (req,res)=>{
 
 }
 const deleteCart = async (req,res)=>{
-  const {cartId} = req.params
+
   const {UserId} = req.user
-  if(!cartId) throw new badRequest("Cart id expected")
-    const cart  = await cartModel.findOneAndDelete({_id:cartId,UserId})
+
+    const cart  = await cartModel.findOneAndDelete({UserId})
   if(!cart) throw new badRequest('User doesn\'t have a cart to delete')
     return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart deleted successfully"})
 }
 const deleteFromCart = async (req,res)=>{
-  const {productId,cartId} = req.params
+  const {productId} = req.params
   const {UserId} = req.user
-  if(!cartId) throw new badRequest("Cart id expected")
-    const cart  = await cartModel.updateOne({_id:cartId,UserId},{$pull:{items:{_id:productId}}})
-  if(!cart) throw new badRequest('Product doesn\'t exist in cart')
-    return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart deleted successfully"})
+
+    const cart  = await cartModel.updateOne({UserId},{$pull:{items:{productId}}})
+  //if(!cart) throw new badRequest('Product doesn\'t exist in cart')
+    return res.status(StatusCodes.OK).json({success:true,deleted_cart:cart,message:"Cart updated successfully"})
 }
 const deductFromCart = async (req,res)=>{
-  const {productId,cartId}  = req.params
+  const {productId}  = req.params
   const {UserId} = req.user
   const {quantity} = req.body
+  if(quantity<1) throw new badRequest('Expected positive number for quantity')
   const cart = await cartModel.findOne({UserId})
   if(!cart) throw new badRequest('User doesn\'t have a cart')
   const {items} = cart
@@ -73,16 +74,16 @@ const deductFromCart = async (req,res)=>{
   if(!product) throw new badRequest('This item isn\'t in your cart')
   const prodQuantity = product.quantity
   if(quantity>prodQuantity) throw new badRequest('Specified quantity to delete exceeds quantity of product present in the cart')
-  else if(quantity-prodQuantity ===0){
-        await cartModel.deleteOne({_id:cartId,UserId,'items.productId':productId})
+  else if(quantity===prodQuantity){
+        await cartModel.updateOne({UserId},{$pull:{items:{productId}}})
         if(items.length===1){
-          let cart = await cartModel.findOneAndDelete({_id:cartId,UserId})
+          let cart = await cartModel.findOneAndDelete({UserId})
           return res.status(StatusCodes.OK).json({success:true,cart,message:`Cart deleted successfully`})
         }
         return res.status(StatusCodes.OK).json({success:true,cart,message:`product deducted successfully`})
   }
   else{
-    let cart = await cartModel.updateOne({UserId,_id:cartId,'items.productId':productId},{$inc: {'items.$.quantity':-quantity}})
+    let cart = await cartModel.updateOne({UserId,'items.productId':productId},{$inc: {'items.$.quantity':-quantity}})
     return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart data updated successfully"})
   }
 

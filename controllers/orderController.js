@@ -84,4 +84,18 @@ const getOrder = async (req,res)=>{
     if(!order) throw new badRequest("This order doesn't exist")
     return res.status(StatusCodes.OK).json({success:true, order,message:"Order fetched successfully"})
 }
+
+const shipProducts = async (req,res)=>{
+  const{UserId, role} = req.user
+  const {orderId} = req.params
+  if(role!=='admin') throw new authError("Only admins can access this route")
+    let order = await orderModel.findOne({_id:orderId}).select('vendorsInvolved')
+    if(!order) throw new badRequest('order doesn\'t exist')
+  order.vendorsInvolved.forEach((vendorInvolved)=>{
+    if(vendorInvolved.packed!== true) throw new badRequest("Unable to ship products because not all vendors have packed their orders")
+  })
+  order = await orderModel.findOneAndUpdate({_id:orderId,orderStatus:"processing"},{orderStatus:'shipped'},{returnDocument:'after'})
+  if(!order) throw new badRequest('order doesn\'t exist')
+  return res.status(StatusCodes.OK).json({success:true,order,message:"Products shipped successfully"})
+}
 module.exports = {createOrder,getAllOrders,getOrder}

@@ -72,4 +72,4 @@ const processOrder = async (req,res)=>{
     return res.status(StatusCodes.OK).json({success:true,order,message:"Order status changed to true"})
     
 }
-module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders}
+module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders,processOrder}

@@ -44,10 +44,11 @@ const createOrder = async (req, res) => {
         { $inc: { stockQuantity: -item.quantity } },
         { session, returnDocument: "after" }
       );
-      vendorsInvolved.push({vendorId:item.vendor})
       if (!updatedProduct) {
         throw new badRequest(`Not enough stock for ${item.productId.name}`);
       }
+            
+      if(!vendorsInvolved.some((vendor)=>vendor.vendorId.toString()===item.vendor.toString()))vendorsInvolved.push({vendorId:item.vendor})
     }
 
     // 2. Create the order (array syntax required when passing a session)

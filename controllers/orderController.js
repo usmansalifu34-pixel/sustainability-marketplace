@@ -98,4 +98,4 @@ const shipProducts = async (req,res)=>{
   if(!order) throw new badRequest('order doesn\'t exist')
   return res.status(StatusCodes.OK).json({success:true,order,message:"Products shipped successfully"})
 }
-module.exports = {createOrder,getAllOrders,getOrder}
+module.exports = {createOrder,getAllOrders,getOrder,shipProducts}

@@ -1,4 +1,4 @@
-const {badRequest} = require('../errors')
+const {badRequest,authError} = require('../errors')
 const{StatusCodes} = require('http-status-codes')
 const cartModel = require('../models/cartModel')
 const orderModel = require('../models/orderModel')

@@ -4,7 +4,6 @@ const router = express.Router()
 const {param} = require('express-validator')
 const addValidators = require('../middleware/addValidators')
 const checkValidity = require('../middleware/checkValidation')
-const {param} = require('express-validator')
 const {updateProfile,checkProfile,getPaidOrders,processOrder} = require('../controllers/vendorController')
 
 

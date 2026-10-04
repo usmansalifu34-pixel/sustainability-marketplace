@@ -5,7 +5,8 @@ const productModel = require('../models/productModel')
 const mongoose = require('mongoose')
 const orderModel = require('../models/orderModel')
 const idempModel = require('../models/idempotencyObject')
-const { findOneAndUpdate } = require('../models/userModel')
+
+
 const addToCart = async (req,res)=>{
   //Get input data from request body
     const {id,quantity} = req.body

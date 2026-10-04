@@ -95,7 +95,7 @@ const shipProducts = async (req,res)=>{
     if(vendorInvolved.packed!== true) throw new badRequest("Unable to ship products because not all vendors have packed their orders")
   })
   order = await orderModel.findOneAndUpdate({_id:orderId,orderStatus:"processing"},{orderStatus:'shipped'},{returnDocument:'after'})
-  if(!order) throw new badRequest('order doesn\'t exist')
+  if(!order) throw new badRequest('order hasn\'t been processed yet')
   return res.status(StatusCodes.OK).json({success:true,order,message:"Products shipped successfully"})
 }
 module.exports = {createOrder,getAllOrders,getOrder,shipProducts}

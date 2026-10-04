@@ -22,6 +22,7 @@ const addToCart = async (req,res)=>{
       
       return item.productId.toString() === id
     })
+
     if(cartProd){
       //If the product is in the cart then checks if that quantity + the requested quantity exceeds stock quantity, if it doesn't then it just increases the quantity of the product in the cart
       if(cartProd.quantity + quantity > product.stockQuantity) throw new badRequest(`Requested product quantity exceeds available stock`)
@@ -79,11 +80,10 @@ const deductFromCart = async (req,res)=>{
   let cart = await cartModel.findOne({UserId})
   if(!cart) throw new badRequest('User doesn\'t have a cart')
   const {items} = cart
-  const product = items.find((item)=>
-    item.productId.toString() ===productId
-  )
+  const product = items.find((item)=>item.productId.toString() === productId)
+  
   if(!product) throw new badRequest('This item isn\'t in your cart')
-  const prodQuantity = product.stockQuantity
+  const prodQuantity = product.quantity
 
   if(quantity>prodQuantity) throw new badRequest('Specified quantity to delete exceeds quantity of product present in the cart')
   else if(quantity===prodQuantity){
@@ -95,7 +95,7 @@ const deductFromCart = async (req,res)=>{
         return res.status(StatusCodes.OK).json({success:true,cart,message:`product deducted successfully`})
   }
   else{
-    cart = await cartModel.findOneAndUpdate({UserId,'items.productId':productId},{$inc: {'items.$.stockQuantity':-quantity}},{returnDocument:"after"})
+    cart = await cartModel.findOneAndUpdate({UserId,'items.productId':productId},{$inc: {'items.$.quantity':-quantity}},{returnDocument:"after"})
     return res.status(StatusCodes.OK).json({success:true,cart,message:"Cart data updated successfully"})
   }
 

@@ -51,14 +51,10 @@ const checkProfile = async (req,res)=>{
 const getPaidOrders = async (req,res)=>{
     const {role,UserId} = req.user
     if(role!=='vendor') throw new authError('User isn\'t authorised to use this route')
-    const orders  = await orderModel.find({orderStatus:'paid'})
-    if(!orders) throw new badRequest('No order has been paid for')
-    const allVendorsInvolved = orders.map((order)=>order.vendorsInvolved)
-    const isVendorInvolved = allVendorsInvolved.filter((vendorsInvolved)=>{
-        return vendorsInvolved.some(vendorsInvolved=>vendorsInvolved.vendorId==UserId)
-    })
-    console.log(isVendorInvolved)
-    res.status(StatusCodes.OK).send('yoooo')
+    const orders  = await orderModel.find({orderStatus:'paid','vendorsInvolved.vendorId':UserId})
+    if(!orders) throw new badRequest('No order involving this vendor has been paid for')
+    
+    res.status(StatusCodes.OK).json({success:true,orders,message:"Paid orders fetched successfully",noHits:orders.length})
 
  
 }

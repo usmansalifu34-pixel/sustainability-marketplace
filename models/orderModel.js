@@ -3,7 +3,7 @@ const orderSchema = new mongoose.Schema({
     UserId: {type:mongoose.Schema.Types.ObjectId,required:true},
     totalCost:{type:Number,required:true},
     CustomerName:{type:String, required:true},
-    vendorsInvolved:[{vendorId:{ type: mongoose.Schema.Types.ObjectId}}],
+    vendorsInvolved:[{vendorId:{ type: mongoose.Schema.Types.ObjectId},packed:{type:Boolean, default:false}}],
     items: [
         {
           productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },

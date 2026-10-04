@@ -62,4 +62,14 @@ const getPaidOrders = async (req,res)=>{
 
  
 }
+
+const processOrder = async (req,res)=>{
+    const {UserId,role} = req.user
+    const {orderId} = req.params
+    if(role!=='vendor') throw new authError('You are not authorized to access this route')
+    const order = await orderModel.findOneAndUpdate({'vendorsInvolved.vendorId':UserId,_id:orderId,orderStatus:'paid'},{$set:{'vendorsInvolved.$.packed':true}},{returnDocument:"after"})
+    if(!order) throw new badRequest('This order hasn\'t been paid for')
+    return res.status(StatusCodes.OK).json({success:true,order,message:"Order status changed to true"})
+    
+}
 module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders}

@@ -4,8 +4,8 @@ const addValidators = require('../middleware/addValidators')
 const checkValidity = require('../middleware/checkValidation')
 const {param} = require('express-validator')
 
-const {getAllOrders,getOrder} = require('../controllers/orderController')
-const {orderRecieved,cancelOrder} = require('../controllers/orderController')
+const {getAllOrders,getOrder,orderRecieved,cancelOrder} = require('../controllers/orderController')
+
 
 router.get('/',getAllOrders)
 router.get('/:orderId',param('orderId').notEmpty(),checkValidity,getOrder)

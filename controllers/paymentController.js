@@ -61,15 +61,15 @@ const confirmPaymentWebhook = async (req,res)=>{
     let order
   
     if(event=== "charge.success"){
-        order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
-        if(!order) throw new badRequest('No order has that reference number')
+        order = await orderModel.findOneAndUpdate({orderRef:reference,orderStatus:"pending_payment"},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
+        if(!order){
+            order = await orderModel.findOne({orderRef:reference})
+             if(!order) throw new badRequest('No order has that reference number')
+                return res.status(StatusCodes.OK).json({success:true,order, message:"Order already processed"})
+            }
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment was successful"})
     }
-    else{
-        order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"payment_failed"},{returnDocument:"after",runValidators:true})
-        if(!order) throw new badRequest('No order has that reference number')
-        return res.status(StatusCodes.OK).json({success:true,order,message:"Order payment failed"})
-    }
+    
     
 }
 module.exports = {

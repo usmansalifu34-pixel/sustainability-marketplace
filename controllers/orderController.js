@@ -109,7 +109,7 @@ const orderDelivered = async (req,res)=>{
 }
 
 const orderRecieved = async(req,res)=>{
-  const {UserId} = req.userrro
+  const {UserId} = req.user
   const {orderId} = req.params
   const order = await orderModel.findOneAndUpdate({UserId,_id:orderId,orderStatus:'delivered'},{orderStatus:'completed'})
   if(!order) throw new badRequest('User doesn\'t have a delivered order')
@@ -117,6 +117,6 @@ const orderRecieved = async(req,res)=>{
 }
 
 const cancelOrder = async (req,res)=>{
-
+  
 }
 module.exports = {createOrder,getAllOrders,getOrder,shipOrders,orderDelivered,orderRecieved,cancelOrder}

@@ -123,10 +123,20 @@ const cancelOrder = async (req,res)=>{
   const {UserId} = req.user
   const {orderId} = req.params
   const order = await orderModel.findOneAndUpdate(
-                  {UserId,_id:orderId,orderStatus:{$in: ['pending_payment', 'payment_failed','paid', 'processing']}},
+                  {UserId,_id:orderId,orderStatus:{$in: ['pending_payment', 'payment_failed','paid', 'processing','shipped']}},
                   {orderStatus:'cancelled'},
                   {returnDocument:'after'})
   if(!order) throw new badRequest('Order cannot be cancelled')
+
+  const {items} = order
+  for(let item of items){
+   
+    let product  = await productModel.findOneAndUpdate({_id:item.productId},
+      {$inc: {stockQuantity: item.quantity}},
+      {returnDocument:'after'})
+   
+  }
+
     return res.status(StatusCodes.OK).json({success:true, order, message:"Order cancelled successfully"})
 }
 module.exports = {createOrder,getAllOrders,getOrder,shipOrders,orderDelivered,orderRecieved,cancelOrder}

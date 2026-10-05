@@ -7,7 +7,7 @@ const checkValidity = require('../middleware/checkValidation')
 
 const {listVendors,verifyVendor,getVendor} = require('../controllers/vendorController')
 const {getProductsAdmin,verifyProduct,getProductAdmin} = require('../controllers/productsController')
-const {shipProducts} = require('../controllers/orderController')
+const {shipOrders,ordersDelivered} = require('../controllers/orderController')
 
 
 router.route('/vendors').get(isAdmin,listVendors)

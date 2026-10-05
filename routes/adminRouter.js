@@ -19,5 +19,5 @@ router.route('/products').get(isAdmin,getProductsAdmin)
 router.route('/products/:productId').patch(addValidators[7],checkValidity,isAdmin,verifyProduct)
             .get([param('productId').notEmpty()],checkValidity,isAdmin,getProductAdmin)
 
-router.patch('/orders/ship/:orderId',[param('orderId').notEmpty()],checkValidity,shipProducts)
+router.patch('/orders/ship/:orderId',[param('orderId').notEmpty()],checkValidity,shipOrders)
 module.exports = router

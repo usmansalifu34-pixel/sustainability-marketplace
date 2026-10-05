@@ -57,9 +57,9 @@ const confirmPaymentWebhook = async (req,res)=>{
     if(hash!==paystackHash) throw new authError('Invalid key')
     const {event} = JSON.parse(req.body)
     const {reference} = JSON.parse(req.body).data
-    console.log(reference)
+ 
     let order
-    console.log('NOTICE MEEEE')
+  
     if(event=== "charge.success"){
         order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:"after",runValidators:true})
         if(!order) throw new badRequest('No order has that reference number')

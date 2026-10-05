@@ -85,7 +85,7 @@ const getOrder = async (req,res)=>{
     return res.status(StatusCodes.OK).json({success:true, order,message:"Order fetched successfully"})
 }
 
-const shipProducts = async (req,res)=>{
+const shipOrders = async (req,res)=>{
   const{UserId, role} = req.user
   const {orderId} = req.params
   if(role!=='admin') throw new authError("Only admins can access this route")
@@ -98,4 +98,13 @@ const shipProducts = async (req,res)=>{
   if(!order) throw new badRequest(`Order can't be shipped`)
   return res.status(StatusCodes.OK).json({success:true,order,message:"Products shipped successfully"})
 }
-module.exports = {createOrder,getAllOrders,getOrder,shipProducts}
+
+const orderDelivered = async (req,res)=>{
+  const {orderId} = req.params
+  const {role} = req.user
+  if(role!=='admin') throw new authError("You are not authorised to access this route")
+  const order = await orderModel.findOneAndUpdate({_id:orderId,orderStatus:'shipped'},{orderStatus:'delivered'},{returnDocument:"after"})
+  if(!order) throw new badRequest('This order has not been shipped')
+    return res.status(StatusCodes.OK).json({success:true,order,message:"Order delivered successfully"})
+}
+module.exports = {createOrder,getAllOrders,getOrder,shipOrders,orderDelivered}

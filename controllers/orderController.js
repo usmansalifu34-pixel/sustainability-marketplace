@@ -107,4 +107,16 @@ const orderDelivered = async (req,res)=>{
   if(!order) throw new badRequest('This order has not been shipped')
     return res.status(StatusCodes.OK).json({success:true,order,message:"Order delivered successfully"})
 }
-module.exports = {createOrder,getAllOrders,getOrder,shipOrders,orderDelivered}
+
+const orderRecieved = async(req,res)=>{
+  const {UserId} = req.userrro
+  const {orderId} = req.params
+  const order = await orderModel.findOneAndUpdate({UserId,_id:orderId,orderStatus:'delivered'},{orderStatus:'completed'})
+  if(!order) throw new badRequest('User doesn\'t have a delivered order')
+    return res.status(StatusCodes.OK).json({success:true, order, message:"Order received successfully"})
+}
+
+const cancelOrder = async (req,res)=>{
+
+}
+module.exports = {createOrder,getAllOrders,getOrder,shipOrders,orderDelivered,orderRecieved,cancelOrder}

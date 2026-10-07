@@ -4,9 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon app",
-    "build:css": "tailwindcss -i ./src/input.css -o ./public/index.css --minify",
-    "watch:css": "tailwindcss -i ./src/input.css -o ./public/index.css --watch"
+    "start": "nodemon app"
   },
   "keywords": [],
   "author": "",
@@ -31,7 +29,6 @@
   "devDependencies": {
     "jest": "^30.5.2",
     "nodemon": "^3.1.14",
-    "supertest": "^7.3.0",
-    "tailwindcss": "^3.4.19"
+    "supertest": "^7.3.0"
   }
 }

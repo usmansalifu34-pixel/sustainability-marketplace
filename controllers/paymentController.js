@@ -43,7 +43,8 @@ const verifyPayment = async(req,res)=>{
             Authorization : `Bearer ${process.env.PAYSTACK_TESTKEY}`
         }
     })
-    if(response.data.data.status!==true)throw new badRequest('Payment verification failed')
+   
+    if(response.data.data.status!== 'success')throw new badRequest('Payment verification failed')
     const order = await orderModel.findOneAndUpdate({orderRef:reference},{orderStatus:"paid"},{returnDocument:'after',runValidators:true})
     if(!order) throw new badRequest('Order doesn\'t exist')
         return res.status(StatusCodes.OK).json({success:true,order,message:"Order paid for successfully"})

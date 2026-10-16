@@ -1,11 +1,11 @@
 const req = require('supertest')
 const {app} = require('../app')
-
+const mongoose = require('mongoose')
 describe('Auth route tests',()=>{
     let token;
-    // beforeAll( ()=>{
-        
-    // })
+    beforeAll( async ()=>{
+        await mongoose.connect(process.env.mongo_uri)
+    })
     test('it logs a user in',async ()=>{
             let res = await req(app).post('/market/v1/auth/login').send({email:'josh@gmail.com',password:'password'})
             expect(res.statusCode).toBe(200)
@@ -15,5 +15,8 @@ describe('Auth route tests',()=>{
         let res = await req(app).post('/market/v1/auth/login').send({email:"fake@gmail.com",password:"fake"})
         expect(res.statusCode).toBe(400)
         
+    })
+    afterAll(async ()=>{
+        await mongoose.connection.close()
     })
 })

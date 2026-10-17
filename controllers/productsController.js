@@ -104,7 +104,7 @@ const updateProduct = async (req,res)=>{
                 ContentType: req.file.mimetype
             })
             prodImage = `https://sustainability-market-images.s3.us-east-1.amazonaws.com/${key}`
-            product = await model.findOneAndUpdate({vendor:UserId,_id:id},{...req.body,image:prodImage},{returnDocument:"after",runValidators:true})
+            product = await model.findOneAndUpdate({vendor:UserId,_id:productId},{...req.body,image:prodImage},{returnDocument:"after",runValidators:true})
             
     
     }

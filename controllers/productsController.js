@@ -81,7 +81,7 @@ const getProduct = async(req,res)=>{
 
 const updateProduct = async (req,res)=>{
     const {role,UserId} = req.user
-    const {id} = req.params
+    const {productId} = req.params
     if(role!=='vendor') throw new authError("You are not authorized to access this route")
         let product
     if(req.file) {

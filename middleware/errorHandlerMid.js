@@ -4,6 +4,7 @@ const errorHandler = (err,req,res,next)=>{
     //console.log(err.message);
     
     let customErr = {
+        success: false,
         statusCode:err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
         msg: err.message|| 'Something went wrong'
     }

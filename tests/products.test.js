@@ -16,6 +16,13 @@ describe('Tests all product routes',()=>{
             expect(Array.isArray(res.body.products)).toBe(true)
     
         })
+        test('successfully get an existing product by id',async()=>{
+            let productId = '6aca3cbc082ffc78233362ba'
+            let res = await req(app).get(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${token}`)
+              console.log(res.text)
+            expect(res.statusCode).toBe(200)
+            expect(res.body.success).toBe(true)
+        })
     })
     afterAll(async () => {
   await mongoose.connection.close()

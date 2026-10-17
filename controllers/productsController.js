@@ -56,7 +56,7 @@ const getProducts = async (req,res)=>{
 }
 const deleteProduct = async (req,res)=>{
     const {role,UserId} = req.user
-    const {id} = req.params
+    const {productId} = req.params
     if(role!=='vendor') throw new authError('You are not authorized to access this route')
         const product = await model.findOneAndDelete({_id:id,vendor:UserId})
     if(!product) throw new notFound("Product doesn't exist in database")

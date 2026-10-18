@@ -15,14 +15,13 @@ const errorHandler = (err,req,res,next)=>{
     }
     if(err.name==='CastError'){
         customErr.msg  = `No item found with id :${err.value}`
-        customErr.statusCode = 404
+        customErr.statusCode = 400
     }
 
     if(err.code && err.code ===11000 ){
         customErr.msg = `Duplicate value entered for ${Object.keys(err.keyValue)} field, please choose another value`
         customErr.statusCode = 400
     }
-    console.log(err)
      //return res.status(customErr.statusCode).json(err)
     return res.status(customErr.statusCode).json(customErr)
 }

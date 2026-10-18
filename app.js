@@ -45,6 +45,9 @@ app.use('/market/v1/admin',authMid,adminRouter)
 app.use('/market/v1/payment',authMid,paymentRouter)
 app.use('/market/v1/orders',authMid,orderRouter)
 
+app.use(errorHandler)
+app.use(notFound)
+
 const port = process.env.port || 3000
 
 
@@ -57,8 +60,7 @@ const start = async()=>{
         await connectDB(process.env.mongo_uri)
         console.log(`Database connected successfully`)
         app.listen(3000,()=>{console.log(`Server is listening on port ${port}`)})
-        app.use(errorHandler)
-        app.use(notFound)
+       
     } catch (error) {
         console.error(`Unable to connect to database`)
     }

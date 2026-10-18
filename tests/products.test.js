@@ -10,6 +10,9 @@ describe('Tests all product routes',()=>{
         token = res.body.token
     })
     describe('Tests all get product routes (get all and get one)',()=>{
+         let productId = '6aca3cbc082ffc78233362ba'
+         let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
+         let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
         test('Get all products',async ()=>{
             let res = await req(app).get('/market/v1/products').set('Authorization',`Bearer ${token}`)
             expect(res.statusCode).toBe(200)
@@ -17,10 +20,20 @@ describe('Tests all product routes',()=>{
     
         })
         test('successfully get an existing product by id',async()=>{
-            let productId = '6aca3cbc082ffc78233362ba'
+           
             let res = await req(app).get(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${token}`)
             expect(res.statusCode).toBe(200)
             expect(res.body.success).toBe(true)
+        })
+        test('Fails if the product doesn\'t exist',async ()=>{
+            let res = await req(app).get(`/market/v1/products/${fakeId}`).set('Authorization',`Bearer ${token}`)
+            expect(res.statusCode).toBe(404)
+            expect(res.body.success).toBe(false)
+        })
+        test('Fails if an invalid id is passed into the request params',async ()=>{
+            let res = await req(app).get(`/market/v1/products/${wrongId}`).set('Authorization',`Bearer ${token}`)
+            expect(res.statusCode).toBe(400)
+            expect(res.body.success).toBe(false)
         })
     })
     afterAll(async () => {

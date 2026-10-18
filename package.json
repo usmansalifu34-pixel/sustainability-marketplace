@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --forceExit --testTimeout=60000",
-    "start": "nodemon app"
+    "start": "nodemon server"
   },
   "keywords": [],
   "author": "",

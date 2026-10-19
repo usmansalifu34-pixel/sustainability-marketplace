@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 describe('Tests all product routes',()=>{
     let authToken;
     let unAuthToken;
+    let customerToken;
     let productId = '6aca3c03e398e6278b5d7c2a'
     let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
     let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
@@ -14,6 +15,8 @@ describe('Tests all product routes',()=>{
         authToken = res.body.token
         res = await req(app).post('/market/v1/auth/login').send({email: "randy@gmail.com",password:"password"})
         unAuthToken = res.body.token
+        res = await req(app).post('/market/v1/auth/login').send({email: "salifu@gmail.com",password:"password"})
+        customerToken = res.body.token
     })
     describe('Tests all get product routes (get all and get one)',()=>{
         
@@ -50,6 +53,11 @@ describe('Tests all product routes',()=>{
         test('Should fail if the product wasn\'t made by the person trying to update it',async()=>{
             let res = await req(app).patch(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${unAuthToken}`).send({'name':'Yellow daisies'})
             expect(res.statusCode).toBe(404)
+            expect(res.body.success).toBe(false)
+        })
+        test('Should block non-vendors from accessing the route', async ()=>{
+            let res = await req(app).patch(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${customerToken}`).send({'name':'Yellow Chamomile'})
+            expect(res.statusCode).toBe(401)
             expect(res.body.success).toBe(false)
         })
     })

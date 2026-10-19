@@ -6,6 +6,7 @@ describe('Tests all product routes',()=>{
     let authToken;
     let unAuthToken;
     let customerToken;
+    let adminToken;
     let productId = '6aca3c03e398e6278b5d7c2a'
     let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
     let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
@@ -17,6 +18,8 @@ describe('Tests all product routes',()=>{
         unAuthToken = res.body.token
         res = await req(app).post('/market/v1/auth/login').send({email: "salifu@gmail.com",password:"password"})
         customerToken = res.body.token
+        res = await req(app).post('/market/v1/auth/login').send({email:'smilga@gmail.com',password:"randompassword"})
+        adminToken = res.body.token
     })
     describe('Tests all get product routes (get all and get one)',()=>{
         
@@ -42,6 +45,11 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(400)
             expect(res.body.success).toBe(false)
         })
+        test('Fails if the user is not an admin',async ()=>{
+            let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${unAuthToken}`)
+            expect(res.statusCode).toBe(401)
+            expect(res.body.success).toBe(false)
+        } )
     })
     describe('Tests Updating of a product',()=>{
         test('successfully update\'s a vendor\s product',async ()=>{

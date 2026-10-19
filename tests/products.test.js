@@ -4,15 +4,16 @@ const mongoose = require('mongoose')
 
 describe('Tests all product routes',()=>{
     let token;
+    let productId = '6aca3c03e398e6278b5d7c2a'
+    let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
+    let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
     beforeAll(async ()=>{
         await mongoose.connect(process.env.mongo_uri)
         let res = await req(app).post('/market/v1/auth/login').send({email:"josh@gmail.com",password:"password"})
         token = res.body.token
     })
     describe('Tests all get product routes (get all and get one)',()=>{
-         let productId = '6aca3cbc082ffc78233362ba'
-         let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
-         let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
+        
         test('Get all products',async ()=>{
             let res = await req(app).get('/market/v1/products').set('Authorization',`Bearer ${token}`)
             expect(res.statusCode).toBe(200)
@@ -34,6 +35,14 @@ describe('Tests all product routes',()=>{
             let res = await req(app).get(`/market/v1/products/${wrongId}`).set('Authorization',`Bearer ${token}`)
             expect(res.statusCode).toBe(400)
             expect(res.body.success).toBe(false)
+        })
+    })
+    describe('Tests Updating of a product',()=>{
+        test('Should successfully update a vendor\s product',async ()=>{
+                let res = await req(app).patch(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${token}`).send({'name':'Yellow Chamomile'})
+                console.log(res.text,productId)
+                expect(res.statusCode).toBe(200)
+                expect(res.body.success).toBe(true)
         })
     })
     afterAll(async () => {

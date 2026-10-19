@@ -87,7 +87,7 @@ const updateProduct = async (req,res)=>{
     if(req.file) {
         const{buffer} = req.file
             
-            let prod = await model.findOne({_id:id})
+            let prod = await model.findOne({_id:productId})
             if(!prod) throw new notFound("Product doesn't exist in database")
             let prodImage = prod.image
             let key = prodImage.slice(prodImage.lastIndexOf('/')+1)
@@ -111,7 +111,7 @@ const updateProduct = async (req,res)=>{
     
     
     else{
-        product = await model.findOneAndUpdate({vendor:UserId,_id:id},req.body,{runValidators:true,returnDocument:"after"})
+        product = await model.findOneAndUpdate({vendor:UserId,_id:productId},req.body,{runValidators:true,returnDocument:"after"})
     }
     if(!product) throw new notFound("Product doesn't exist in database")
         res.status(StatusCodes.OK).json({success:true,product,message:`Product updated successfully`})

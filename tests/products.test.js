@@ -45,6 +45,11 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(400)
             expect(res.body.success).toBe(false)
         })
+        test('Gets all products as an admin', async()=>{
+            let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${adminToken}`)
+            expect(res.statusCode).toBe(200)
+            expect(res.body.success).toBe(true)
+        })
         test('Fails if the user is not an admin',async ()=>{
             let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${unAuthToken}`)
             expect(res.statusCode).toBe(401)

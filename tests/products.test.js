@@ -47,8 +47,11 @@ describe('Tests all product routes',()=>{
         })
         test('Gets all products as an admin', async()=>{
             let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${adminToken}`)
+            console.log(res.body)
             expect(res.statusCode).toBe(200)
             expect(res.body.success).toBe(true)
+            expect(Array.isArray(res.body.products)).toBe(true)
+
         })
         test('Fails if the user is not an admin',async ()=>{
             let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${unAuthToken}`)
@@ -59,7 +62,6 @@ describe('Tests all product routes',()=>{
     describe('Tests Updating of a product',()=>{
         test('successfully update\'s a vendor\s product',async ()=>{
                 let res = await req(app).patch(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${authToken}`).send({'name':'Yellow Chamomile'})
-                console.log(res.text,productId)
                 expect(res.statusCode).toBe(200)
                 expect(res.body.success).toBe(true)
         })

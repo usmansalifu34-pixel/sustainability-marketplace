@@ -31,13 +31,16 @@ const createProduct = async(req,res)=>{
     res.status(StatusCodes.CREATED).json({success:true,product,message:`Product was successfully created`})
 }
 const getProducts = async (req,res)=>{
-    let {price,sort,filter,name,page,amount} = req.query
+    let {price,sort,filter,name,page,amount,vendorId} = req.query
     const queryObject = {}
     if(name){
         queryObject.name = {$regex: name,$options: "i"}
     }
     if(price){
         queryObject.price = price
+    }
+    if(vendorId){
+        queryObject.vendor = vendorId
     }
     let products = model.find(queryObject)
     if(filter){

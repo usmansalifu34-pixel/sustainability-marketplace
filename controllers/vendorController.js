@@ -68,4 +68,11 @@ const processOrder = async (req,res)=>{
     return res.status(StatusCodes.OK).json({success:true,order,message:"Order status changed to true"})
     
 }
+
+const listVendorsPublic = async (req,res)=>{
+    const vendors = await userModel.find({role:vendor, status:verified})
+    if(vendors.length === 0) return res.status(statusCodes.OK).json({success:true,vendors,message:`No vendors yet`})
+    return res.status(statusCodes.OK).json({success:true,vendors,message:`Vendors fetched successfully`})
+    
+}
 module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders,processOrder}

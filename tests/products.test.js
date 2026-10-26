@@ -96,7 +96,11 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(200)
             expect(res.body.success).toBe(true)
         })
-        
+        test('Should fail if the user is not an admin',async()=>{
+            let res = await req(app).patch(`/market/v1/admin/products/${unverifiedProductId}/verify`).set('Authorization',`Bearer ${customerToken}`).send({status:'verified'})
+            expect(res.statusCode).toBe(401)
+            expect(res.body.success).toBe(false)
+        })
     })
 
     afterAll(async () => {

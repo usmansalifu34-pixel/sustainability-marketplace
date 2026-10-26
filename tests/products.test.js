@@ -7,8 +7,8 @@ describe('Tests all product routes',()=>{
     let unAuthToken;
     let customerToken;
     let adminToken;
-    let productId = '6aca3cbc082ffc78233362ba'
-    let unverifiedProductId = '6aca3c03e398e6278b5d7c2a'
+    let productId = '6aca3c03e398e6278b5d7c2a'
+    let unverifiedProductId = '6aca3cbc082ffc78233362ba'
     let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
     let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
     beforeAll(async ()=>{
@@ -48,7 +48,7 @@ describe('Tests all product routes',()=>{
         })
         test("Fails if the specified product is not verified",async()=>{
             let res = await req(app).get(`/market/v1/products/${unverifiedProductId}`).set('Authorization',`Bearer ${customerToken}`)
-            expeect(res.statusCode).toBe(404)
+            expect(res.statusCode).toBe(404)
             expect(res.body.success).toBe(false)
         })
         test('Gets all products as an admin', async()=>{

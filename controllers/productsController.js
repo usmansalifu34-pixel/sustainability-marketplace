@@ -32,7 +32,7 @@ const createProduct = async(req,res)=>{
 }
 const getProducts = async (req,res)=>{
     let {price,sort,filter,name,page,amount,vendorId} = req.query
-    const queryObject = {}
+    const queryObject = {status:"verified"}
     if(name){
         queryObject.name = {$regex: name,$options: "i"}
     }

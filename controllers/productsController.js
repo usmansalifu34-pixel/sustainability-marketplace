@@ -76,7 +76,7 @@ const deleteProduct = async (req,res)=>{
 }
 const getProduct = async(req,res)=>{
     const {productId} = req.params
-    const product = await model.findOne({_id:productId/*,status:"verified"*/})
+    const product = await model.findOne({_id:productId,status:"verified"})
     if(!product) throw new notFound("Product doesn't exist")
 
     res.status(StatusCodes.OK).json({success:true,product,message:`Product fetched successfully`})

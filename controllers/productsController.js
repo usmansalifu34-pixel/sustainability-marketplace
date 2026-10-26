@@ -142,9 +142,9 @@ const verifyProduct = async (req,res)=>{
     const {productId} = req.params
     const {status} = req.body
     const product = await model.findOneAndUpdate({_id:productId},{status},{returnDocument:"after",runValidators:true})
-    if(status==="verified") res.status(StatusCodes.OK).json({success:true,product,message:"Product verified successfully"})
+    if(status==="verified") return res.status(StatusCodes.OK).json({success:true,product,message:"Product verified successfully"})
     else{
-        res.status(StatusCodes.OK).json({success:true,product,message:"Product rejected successfully"})
+        return res.status(StatusCodes.OK).json({success:true,product,message:"Product rejected successfully"})
     }
 }
 

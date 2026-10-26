@@ -75,7 +75,7 @@ describe('Tests all product routes',()=>{
             expect(res.body.success).toBe(false)
         })
     })
-    describe('Tests Updating of a product',()=>{
+    describe('Tests Updating of a product and product verification routes',()=>{
         test('successfully update\'s a vendor\s product',async ()=>{
                 let res = await req(app).patch(`/market/v1/products/${productId}`).set('Authorization',`Bearer ${authToken}`).send({'name':'Yellow Chamomile'})
                 expect(res.statusCode).toBe(200)
@@ -91,7 +91,14 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(401)
             expect(res.body.success).toBe(false)
         })
+        test('Should successfully allow an admin to change product\'s status',async()=>{
+            let res = await req(app).patch(`/market/v1/admin/products/${unverifiedProductId}/verify`).set('Authorization',`Bearer ${adminToken}`).send({status:'verified'})
+            expect(res.statusCode).toBe(200)
+            expect(res.body.success).toBe(true)
+        })
+        
     })
+
     afterAll(async () => {
   await mongoose.connection.close()
 })

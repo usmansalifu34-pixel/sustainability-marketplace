@@ -7,7 +7,8 @@ describe('Tests all product routes',()=>{
     let unAuthToken;
     let customerToken;
     let adminToken;
-    let productId = '6aca3c03e398e6278b5d7c2a'
+    let productId = '6aca3cbc082ffc78233362ba'
+    let unVerifiedProductId = '6aca3c03e398e6278b5d7c2a'
     let fakeId = '64b7f0c2a1d3e4f5a6b7c8d9'
     let wrongId = '64b7f0c2a1d3e4f5a6b7c8dz'
     beforeAll(async ()=>{
@@ -23,7 +24,7 @@ describe('Tests all product routes',()=>{
     })
     describe('Tests all get product routes (get all and get one)',()=>{
         
-        test('Get all products',async ()=>{
+        test('Get all verified products',async ()=>{
             let res = await req(app).get('/market/v1/products').set('Authorization',`Bearer ${authToken}`)
             expect(res.statusCode).toBe(200)
             expect(Array.isArray(res.body.products)).toBe(true)
@@ -40,10 +41,13 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(404)
             expect(res.body.success).toBe(false)
         })
-        test('Fails if an invalid id is passed into the request params',async ()=>{
+        test('Fails if an invalid id is passed into the request params for getting a single product',async ()=>{
             let res = await req(app).get(`/market/v1/products/${wrongId}`).set('Authorization',`Bearer ${authToken}`)
             expect(res.statusCode).toBe(400)
             expect(res.body.success).toBe(false)
+        })
+        test("Fails if the specified product is not verified",async()=>{
+
         })
         test('Gets all products as an admin', async()=>{
             let res = await req(app).get('/market/v1/admin/products').set('Authorization',`Bearer ${adminToken}`)

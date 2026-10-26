@@ -58,6 +58,9 @@ describe('Tests all product routes',()=>{
             expect(res.statusCode).toBe(401)
             expect(res.body.success).toBe(false)
         } )
+        // test('Gets a single product as an admin',async()=>{
+        //     let res = await req(app).get('/market/v1/admin/')
+        // })
     })
     describe('Tests Updating of a product',()=>{
         test('successfully update\'s a vendor\s product',async ()=>{

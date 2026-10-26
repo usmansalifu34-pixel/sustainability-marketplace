@@ -16,7 +16,7 @@ router.patch('/vendors/verify/:vendorId',addValidators[6],checkValidity,isAdmin,
 router.get('/vendors/:vendorId',[param('vendorId').notEmpty()],checkValidity,isAdmin,getVendor)
 
 router.route('/products').get(isAdmin,getProductsAdmin)
-router.route('/products/:productId').get([param('productId').notEmpty()],checkValidity,getProductAdmin)
+router.route('/products/:productId').get([param('productId').notEmpty()],checkValidity,isAdmin,getProductAdmin)
 router.route('/products/:productId').patch(addValidators[7],checkValidity,isAdmin,verifyProduct)
             .get([param('productId').notEmpty()],checkValidity,isAdmin,getProductAdmin)
 

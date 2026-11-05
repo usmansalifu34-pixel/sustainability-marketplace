@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
     university:{type:String, required:false},
     department: {type:String, required: false},
     faculty: {type:String, required:false},
+    studentEmail:{type:String, required:false,match:[/^[0-9]{9}@live\.unilag\.edu\.ng$/,"Invalid student email"]},
     businessName: {type:String},
     businessDescription: {type:String, maxLength: 250}
 })

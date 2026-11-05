@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
     role: {type:String, default: "customer", enum:["customer","vendor","admin"]},
     status: {type:String,default: "verified", enum: ["verified","pending","rejected"]},
     matricNum: {type:Number, required: false, minLength:9, maxLength: 9},
+    university:{type:String, required:false},
+    department: {type:String, required: false},
+    faculty: {type:String, required:false},
     businessName: {type:String},
     businessDescription: {type:String, maxLength: 250}
 })

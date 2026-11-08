@@ -17,7 +17,8 @@ const mailOptions = {
 const sendMail = async()=>{
     try {
          let email = await transporter.sendMail(mailOptions)
-         console.log(`Email sent successfully. ${Object.entries(email)}`)
+         let res = nodeMailer.getTestMessageUrl(email)
+         console.log(`Email sent successfully. ${res}`)
     } catch (error) {
         console.log(error.message)
     }

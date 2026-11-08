@@ -16,7 +16,7 @@ const sendMail  = async (mail,code)=>{
     text: `Your verification code is ${code}`
     }
     try{
-    const res = await nodemailer.sendMail(mailOptions)
+    const res = await transporter.sendMail(mailOptions)
     const message = nodemailer.getTestMessageUrl(res)
     console.log(message)
     }

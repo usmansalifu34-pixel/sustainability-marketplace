@@ -16,7 +16,8 @@ const updateProfile = async (req,res)=>{
     {returnDocument:"after",runValidators:true}).select("-password -__v")
     let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
-   await mailModel.create({userid:UserId,hashedCode})
+  
+   await mailModel.create({userid:UserId,code:hashedCode})
    await sendMail(studentEmail,code)
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
 }
@@ -26,6 +27,7 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
+    console.log(mail.code)
         let compareRes = await compareCode(code,mail.code)
     if(!compareRes) throw new badRequest('Invalid verification code')
         let user = await userModel.findOneAndUpdate({_id:UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")

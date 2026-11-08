@@ -2,7 +2,8 @@ const {authError, badRequest} = require('../errors')
 const {StatusCodes} = require('http-status-codes')
 const userModel = require('../models/userModel')
 const orderModel = require('../models/orderModel')
-
+const mailModel = require('../models/emailModel')
+const crypto = require('crypto')
 const updateProfile = async (req,res)=>{
     const {businessName,businessDescription,matricNum,university,department,faculty,studentEmail} = req.body
     const {UserId,role} = req.user
@@ -10,7 +11,7 @@ const updateProfile = async (req,res)=>{
         const user = await userModel.findOneAndUpdate({_id:UserId},
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
-   
+   await mailModel.create({userid:UserId,code:crypto.randomInt(100000,1000000)})
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
 }
 const listVendors = async (req,res)=>{

@@ -27,7 +27,6 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
-    console.log(mail.code)
         let compareRes = await compareCode(code,mail.code)
     if(!compareRes) throw new badRequest('Invalid verification code')
         let user = await userModel.findOneAndUpdate({_id:UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")

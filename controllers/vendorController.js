@@ -94,4 +94,4 @@ const listVendorsPublic = async (req,res)=>{
     return res.status(statusCodes.OK).json({success:true,vendors,message:`Vendors fetched successfully`})
     
 }
-module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders,processOrder}
+module.exports = {updateProfile,listVendors,verifyVendor,getVendor,checkProfile,getPaidOrders,processOrder,verifyStudentEmail}

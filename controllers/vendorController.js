@@ -17,7 +17,7 @@ const updateProfile = async (req,res)=>{
     let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
   
-   await mailModel.create({userid:UserId,code:hashedCode})
+   await mailModel.create({userid:UserId,code:hashedCode,expiresAt: new Date.now() + 600000})
    await sendMail(studentEmail,code)
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
 }

@@ -12,7 +12,7 @@ const updateProfile = async (req,res)=>{
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
    await mailModel.create({userid:UserId,code:crypto.randomInt(100000,1000000)})
-    res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
+    res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
 }
 const listVendors = async (req,res)=>{
     let {status,page,limit,fields} = req.query

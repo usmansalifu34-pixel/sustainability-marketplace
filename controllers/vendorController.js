@@ -5,6 +5,7 @@ const orderModel = require('../models/orderModel')
 const mailModel = require('../models/emailModel')
 const crypto = require('crypto')
 const sendMail = require('../middleware/sendEmail')
+const {hashCode} = require('../middleware/hash')
 
 const updateProfile = async (req,res)=>{
     const {businessName,businessDescription,matricNum,university,department,faculty,studentEmail} = req.body
@@ -14,6 +15,7 @@ const updateProfile = async (req,res)=>{
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
     let code = crypto.randomInt(100000,1000000)
+    code = await hashCode(code)
    await mailModel.create({userid:UserId,code})
    await sendMail(studentEmail,code)
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
@@ -24,7 +26,8 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
-    if(code!=mail.code) throw new badRequest('Invalid verification code')
+        let hashedCode = await hashCode(code)
+    if(hashedCode!=mail.code) throw new badRequest('Invalid verification code')
         let user = await userModel.findOneAndUpdate({_id:UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")
     return res.status(StatusCodes.OK).json({success:true,user,message:"Student email verified successfully"})
 }

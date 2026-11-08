@@ -2,11 +2,14 @@ const {authError, badRequest} = require('../errors')
 const {StatusCodes} = require('http-status-codes')
 const userModel = require('../models/userModel')
 const orderModel = require('../models/orderModel')
+
 const updateProfile = async (req,res)=>{
-    const {businessName,businessDescription} = req.body
+    const {businessName,businessDescription,matricNum,university,department,faculty,studentEmail} = req.body
     const {UserId,role} = req.user
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
-        const user = await userModel.findOneAndUpdate({_id:UserId},{businessName,businessDescription},{returnDocument:"after"}).select("-password -__v")
+        const user = await userModel.findOneAndUpdate({_id:UserId},
+    {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
+    {returnDocument:"after",runValidators:true}).select("-password -__v")
    
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
 }

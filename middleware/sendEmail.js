@@ -10,7 +10,7 @@ const transporter =  nodemailer.createTransport({
 })
 const sendMail  = async (mail,code)=>{
     const mailOptions = {
-    from: "Zephyr",
+    from: "Zephyr <fakeemail@gmail.com>"
     to: `${mail}`,
     subject: "Student email verification",
     text: `Your verification code is ${code}`

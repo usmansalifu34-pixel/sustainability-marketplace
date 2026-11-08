@@ -8,7 +8,7 @@ const genPassword = async (password)=>{
 const hashCode = async(code)=>{
     const salt = await bcrypt.genSalt(10)
     let hashedCode = await bcrypt.hash(code,salt)
-    return code
+    return hashedCode
 }
 const compareCode = async(code,hashedCode)=>{
     let res= await bcrypt.compare(code,hashedCode)

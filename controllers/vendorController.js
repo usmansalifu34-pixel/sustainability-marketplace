@@ -19,7 +19,14 @@ const updateProfile = async (req,res)=>{
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
 }
 
-const 
+const verifyStudentEmail = async (req,res)=>{
+    const {UserId} = req.user
+    const {code} = req.body
+    const mail = await mailModel.findOne({userid:UserId})
+    if(code!=mail.code) throw new badRequest('Invalid verification code')
+        let user = await userModel.findOneAndUpdate({UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")
+    return res.status(StatusCodes.OK).json({success:true,user,message:"Student email verified successfully"})
+}
 
 const listVendors = async (req,res)=>{
     let {status,page,limit,fields} = req.query

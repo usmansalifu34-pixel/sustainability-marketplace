@@ -15,7 +15,7 @@ const updateProfile = async (req,res)=>{
     {returnDocument:"after",runValidators:true}).select("-password -__v")
     let code = crypto.randomInt(100000,1000000)
    await mailModel.create({userid:UserId,code})
-   sendMail(studentEmail,code)
+   await sendMail(studentEmail,code)
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
 }
 

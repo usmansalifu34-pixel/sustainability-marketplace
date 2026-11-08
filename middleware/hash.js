@@ -16,5 +16,6 @@ const compareCode = async(code,hashedCode)=>{
 }
 module.exports = {
     hashCode,
-    genPassword
+    genPassword,
+    compareCode
 }

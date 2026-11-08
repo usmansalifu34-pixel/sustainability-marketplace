@@ -6,8 +6,13 @@ const genPassword = async (password)=>{
     return hashedPassword
 }
 const hashCode = async(code)=>{
-    let hashedCode = await bcrypt.hash(code)
+    const salt = await bcrypt.genSalt(10)
+    let hashedCode = await bcrypt.hash(code,salt)
     return code
+}
+const compareCode = async(code,hashedCode)=>{
+    let res= await bcrypt.compare(code,hashedCode)
+    return res
 }
 module.exports = {
     hashCode,

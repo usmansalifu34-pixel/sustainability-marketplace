@@ -41,7 +41,7 @@ const listVendors = async (req,res)=>{
     if(!page) page = 1
     if(!limit) limit = 5
     let amount = (page-1) * limit
-    const vendors = await userModel.find({status:status || 'pending',role:"vendor"}).limit(limit).skip(amount).select(fields)
+    const vendors = await userModel.find({status:status || 'pending',role:"vendor",isStudent:true}).limit(limit).skip(amount).select(fields)
 
     res.status(StatusCodes.OK).json({success:true, vendors,message: "Vendors fetched successfully",noHits:vendors.length})
 }

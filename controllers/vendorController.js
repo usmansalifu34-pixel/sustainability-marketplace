@@ -27,6 +27,7 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
+        if(new Date.now()>=mail.expiresAt) await mailModel.findOneAndDelete({userid:UserId})
         let compareRes = await compareCode(code,mail.code)
     if(!compareRes){
         let temp = await mailModel.findOneAndUpdate({userid:UserId,attempts: {$lt:5}},{$inc:{attempts:1}},{returnDocument:"after"})

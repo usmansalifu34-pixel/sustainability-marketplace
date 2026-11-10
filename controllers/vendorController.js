@@ -25,7 +25,7 @@ const requestVerificationCode = async(req,res)=>{
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
         let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
-   await mailModel.create({userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000})
+   await mailModel.findOneAndUpdate({userid:UserId},{userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000},{returnDocument:"after",upsert:true})
    await sendMail(studentEmail,code)
 
    return res.status(StatusCodes.OK).json({success:true,user:student,message:"Check email for verification code"})

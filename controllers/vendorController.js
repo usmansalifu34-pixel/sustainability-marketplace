@@ -32,7 +32,10 @@ const verifyStudentEmail = async (req,res)=>{
             await mailModel.findOneAndDelete({userid:UserId})
             throw new badRequest('Attempt limit exceeded, request another verification code')
         }
-        if(new Date.now()>=mail.expiresAt) await mailModel.findOneAndDelete({userid:UserId})
+        if(new Date().now()>=mail.expiresAt){
+             await mailModel.findOneAndDelete({userid:UserId})
+             throw new badRequest('Time limit exceeded, request another verification code')
+        }
         let compareRes = await compareCode(code,mail.code)
     if(!compareRes){
          throw new badRequest('Invalid verification code')

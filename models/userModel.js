@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.index(
     {studentEmail:1},
-    {unique:true,partialFilterExpression:{studentEmail:{$type:"String"}}}
+    {unique:true,partialFilterExpression:{studentEmail:{$type:"string"}}}
 )
 
 userSchema.pre('save',async function(){

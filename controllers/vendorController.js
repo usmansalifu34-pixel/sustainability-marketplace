@@ -19,7 +19,7 @@ const updateProfile = async (req,res)=>{
 
 const requestVerificationCode = async(req,res)=>{
     const {UserId} = req.user
-    const student = await userModel.findOne({_id:UserId})
+    const student = await userModel.findOne({_id:UserId}).select("-password")
     const {studentEmail,role} = student
     if(!studentEmail) throw new badRequest("Please update profile with your student email")
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")

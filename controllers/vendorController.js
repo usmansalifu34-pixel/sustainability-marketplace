@@ -27,7 +27,7 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
-        if(Date().now()>=mail.expiresAt){
+        if(Date.now()>=mail.expiresAt){
              await mailModel.findOneAndDelete({userid:UserId})
              throw new badRequest('Time limit exceeded, request another verification code')
         }

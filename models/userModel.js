@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     businessDescription: {type:String, maxLength: 250}
 })
 
+userSchema.index(
+    {studentEmail:1},
+    {unique:true,partialFilterExpression:{studentEmail:{$type:"String"}}}
+)
+
 userSchema.pre('save',async function(){
     const salt = await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password,salt)

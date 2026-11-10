@@ -14,12 +14,21 @@ const updateProfile = async (req,res)=>{
         const user = await userModel.findOneAndUpdate({_id:UserId},
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
-    let code = crypto.randomInt(100000,1000000).toString()
+    res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
+}
+
+const requestVerificationCode = async(req,res)=>{
+    const {UserId} = req.user
+    const student = await userModel.findOne({_id:UserId})
+    const {studentEmail} = student
+    if(!studentEmail) throw new badRequest("Please update profile with your student email")
+    if(role!=="vendor") throw new authError("You aren't authorised to access this route")
+        let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
-  
    await mailModel.create({userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000})
    await sendMail(studentEmail,code)
-    res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully, Check email for verification code"})
+
+   return res.status(StatusCodes.OK).json({success:true,user:student,message:"Check email for verification code"})
 }
 
 const verifyStudentEmail = async (req,res)=>{
@@ -44,6 +53,7 @@ const verifyStudentEmail = async (req,res)=>{
         let user = await userModel.findOneAndUpdate({_id:UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")
     return res.status(StatusCodes.OK).json({success:true,user,message:"Student email verified successfully"})
 }
+
 
 const listVendors = async (req,res)=>{
     let {status,page,limit,fields} = req.query

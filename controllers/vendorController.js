@@ -27,13 +27,17 @@ const verifyStudentEmail = async (req,res)=>{
     const {code} = req.body
     const mail = await mailModel.findOne({userid:UserId})
     if(!mail) throw new badRequest("User didn't request email verification")
+        let temp = await mailModel.findOneAndUpdate({userid:UserId,attempts: {$lt:5}},{$inc:{attempts:1}},{returnDocument:"after"})
+        if(!temp){ 
+            await mailModel.findOneAndDelete({userid:UserId})
+            throw new badRequest('Attempt limit exceeded, request another verification code')
+        }
         if(new Date.now()>=mail.expiresAt) await mailModel.findOneAndDelete({userid:UserId})
         let compareRes = await compareCode(code,mail.code)
     if(!compareRes){
-        let temp = await mailModel.findOneAndUpdate({userid:UserId,attempts: {$lt:5}},{$inc:{attempts:1}},{returnDocument:"after"})
-        if(!temp) await mailModel.findOneAndDelete({userid:UserId})
          throw new badRequest('Invalid verification code')
     }
+        await mailModel.findOneAndDelete({userid:UserId})
         let user = await userModel.findOneAndUpdate({_id:UserId},{isStudent:true},{returnDocument:'after',runValidators:true}).select("-password")
     return res.status(StatusCodes.OK).json({success:true,user,message:"Student email verified successfully"})
 }

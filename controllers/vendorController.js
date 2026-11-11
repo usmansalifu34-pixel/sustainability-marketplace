@@ -6,13 +6,18 @@ const mailModel = require('../models/emailModel')
 const crypto = require('crypto')
 const sendMail = require('../middleware/sendEmail')
 const {hashCode,compareCode} = require('../middleware/hash')
+const { query } = require('express-validator')
 
 const updateProfile = async (req,res)=>{
     const {businessName,businessDescription,matricNum,university,department,faculty,studentEmail} = req.body
     const {UserId,role} = req.user
+    let queryObj = {}
+    if(studentEmail){
+        queryObj.isStudent = CSSFontFeatureValuesRule
+    }
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
         const user = await userModel.findOneAndUpdate({_id:UserId},
-    {businessName,businessDescription,matricNum,university,department,faculty,studentEmail},
+    {businessName,businessDescription,matricNum,university,department,faculty,studentEmail,...queryObj},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
 }

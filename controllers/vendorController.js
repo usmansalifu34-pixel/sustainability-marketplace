@@ -14,6 +14,7 @@ const updateProfile = async (req,res)=>{
     let queryObj = {}
     if(studentEmail){
         queryObj.isStudent = false
+        await mailModel.findOneAndDelete({userid:UserId})
     }
 
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")

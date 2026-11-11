@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     department: {type:String, required: false},
     faculty: {type:String, required:false},
     studentEmail:{type:String, required:false,match:[/^[0-9]{9}@live\.unilag\.edu\.ng$/,"Invalid student email"]},
-    isStudent: {type:String, required: true, default:false, enum: ['true','false']},
+    isStudent: {type:Boolean, required: true, default:false},
     businessName: {type:String},
     businessDescription: {type:String, maxLength: 250}
 })

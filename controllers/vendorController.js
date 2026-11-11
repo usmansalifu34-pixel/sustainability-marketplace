@@ -15,10 +15,12 @@ const updateProfile = async (req,res)=>{
     if(studentEmail){
         queryObj.isStudent = false
     }
+
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
         const user = await userModel.findOneAndUpdate({_id:UserId},
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail,...queryObj},
     {returnDocument:"after",runValidators:true}).select("-password -__v")
+
     res.status(StatusCodes.OK).json({success:true,user,message:"Vendor profile updated successfully"})
 }
 
@@ -26,10 +28,11 @@ const requestVerificationCode = async(req,res)=>{
     const {UserId} = req.user
     const student = await userModel.findOne({_id:UserId}).select("-password")
     if(!student) throw new badRequest("User doesn't exist")
+        console.log(student)
     const {studentEmail,role,isStudent} = student
     if(!studentEmail) throw new badRequest("Please update profile with your student email")
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
-        if(isStudent!==true) throw new badRequest("Student email has already been verified")
+        if(isStudent!==false) throw new badRequest("Student email has already been verified")
         let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
    await mailModel.findOneAndUpdate({userid:UserId},{userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000,attempts:0},{returnDocument:"after",upsert:true})

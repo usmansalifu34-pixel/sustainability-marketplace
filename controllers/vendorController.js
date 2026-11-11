@@ -13,7 +13,7 @@ const updateProfile = async (req,res)=>{
     const {UserId,role} = req.user
     let queryObj = {}
     if(studentEmail){
-        queryObj.isStudent = CSSFontFeatureValuesRule
+        queryObj.isStudent = false
     }
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
         const user = await userModel.findOneAndUpdate({_id:UserId},

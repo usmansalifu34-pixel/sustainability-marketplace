@@ -12,12 +12,13 @@ const updateProfile = async (req,res)=>{
     const {businessName,businessDescription,matricNum,university,department,faculty,studentEmail} = req.body
     const {UserId,role} = req.user
     let queryObj = {}
-    if(studentEmail){
+    
+    if(role!=="vendor") throw new authError("You aren't authorised to access this route")
+        if(studentEmail){
         queryObj.isStudent = false
         await mailModel.findOneAndDelete({userid:UserId})
     }
 
-    if(role!=="vendor") throw new authError("You aren't authorised to access this route")
         const user = await userModel.findOneAndUpdate({_id:UserId},
     {businessName,businessDescription,matricNum,university,department,faculty,studentEmail,...queryObj},
     {returnDocument:"after",runValidators:true}).select("-password -__v")

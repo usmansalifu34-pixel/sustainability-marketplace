@@ -20,12 +20,14 @@ const updateProfile = async (req,res)=>{
 const requestVerificationCode = async(req,res)=>{
     const {UserId} = req.user
     const student = await userModel.findOne({_id:UserId}).select("-password")
-    const {studentEmail,role} = student
+    if(!student) throw new badRequest("User doesn't exist")
+    const {studentEmail,role,isStudent} = student
     if(!studentEmail) throw new badRequest("Please update profile with your student email")
     if(role!=="vendor") throw new authError("You aren't authorised to access this route")
+        if(isStudent!==true) throw new badRequest("Student email has already been verified")
         let code = crypto.randomInt(100000,1000000).toString()
     let hashedCode = await hashCode(code)
-   await mailModel.findOneAndUpdate({userid:UserId},{userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000},{returnDocument:"after",upsert:true})
+   await mailModel.findOneAndUpdate({userid:UserId},{userid:UserId,code:hashedCode,expiresAt: Date.now() + 600000,attempts:0},{returnDocument:"after",upsert:true})
    await sendMail(studentEmail,code)
 
    return res.status(StatusCodes.OK).json({success:true,user:student,message:"Check email for verification code"})
